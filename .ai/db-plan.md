@@ -37,7 +37,6 @@ Tabela przechowująca diagramy sudoku użytkowników.
 
 ### diagrams
 - `IX_diagrams_user_id` na kolumnie `user_id` - optymalizacja zapytań filtrujących po użytkowniku
-- `IX_diagrams_created_at` na kolumnie `created_at` - optymalizacja sortowania po dacie utworzenia
 
 ## Row Level Security (RLS)
 
@@ -62,7 +61,6 @@ USING (auth.uid() = user_id);
 
 2. Optymalizacja:
    - Indeks na `user_id` wspiera szybkie wyszukiwanie diagramów użytkownika
-   - Indeks na `created_at` wspiera sortowanie chronologiczne
    - Kaskadowe usuwanie diagramów przy usunięciu użytkownika (ON DELETE CASCADE)
 
 3. Bezpieczeństwo:
