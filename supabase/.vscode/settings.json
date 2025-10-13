@@ -1,7 +1,4 @@
 {
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
   "deno.enablePaths": [
     "supabase/functions"
   ],
@@ -21,15 +18,7 @@
     "http",
     "net"
   ],
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "eslint.enable": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "astro"
-  ]
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  }
 }
