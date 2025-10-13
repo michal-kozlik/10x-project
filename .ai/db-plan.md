@@ -7,37 +7,37 @@ Tabela zarządzana przez Supabase Auth.
 
 | Kolumna         | Typ          | Ograniczenia                    |
 |----------------|--------------|--------------------------------|
-| Id             | bigserial    | PRIMARY KEY                    |
-| Email          | varchar(255) | NOT NULL, UNIQUE               |
-| CreatedAt      | timestamptz  | NOT NULL, DEFAULT now()        |
-| ConfirmedAt    | timestamptz  | NULL                          |
+| id             | bigserial    | PRIMARY KEY                    |
+| email          | varchar(255) | NOT NULL, UNIQUE               |
+| created_at     | timestamptz  | NOT NULL, DEFAULT now()        |
+| confirmed_at   | timestamptz  | NULL                          |
 
 ### diagrams
 Tabela przechowująca diagramy sudoku użytkowników.
 
 | Kolumna       | Typ          | Ograniczenia                                        |
 |--------------|--------------|---------------------------------------------------|
-| Id           | bigserial    | PRIMARY KEY                                       |
-| Definition   | varchar(100) | NOT NULL                                          |
-| Solution     | varchar(100) | NULL                                              |
-| Name         | varchar(1000)| NULL                                              |
-| CreatedAt    | timestamptz  | NOT NULL, DEFAULT now()                          |
-| UserId       | bigserial    | NOT NULL, REFERENCES users(Id) ON DELETE CASCADE  |
+| id           | bigserial    | PRIMARY KEY                                       |
+| definition   | varchar(100) | NOT NULL                                          |
+| solution     | varchar(100) | NULL                                              |
+| name         | varchar(1000)| NULL                                              |
+| created_at   | timestamptz  | NOT NULL, DEFAULT now()                          |
+| user_id      | bigserial    | NOT NULL, REFERENCES users(id) ON DELETE CASCADE  |
 
 ## Klucze
 
 ### Klucze podstawowe
-- `PK_users` na tabeli `users(Id)`
-- `PK_diagrams` na tabeli `diagrams(Id)`
+- `PK_users` na tabeli `users(id)`
+- `PK_diagrams` na tabeli `diagrams(id)`
 
 ### Klucze obce
-- `FK_diagrams_user` na tabeli `diagrams(UserId)` odnoszący się do `users(Id)`
+- `FK_diagrams_user` na tabeli `diagrams(user_id)` odnoszący się do `users(id)`
 
 ## Indeksy
 
 ### diagrams
-- `IX_diagrams_UserId` na kolumnie `UserId` - optymalizacja zapytań filtrujących po użytkowniku
-- `IX_diagrams_CreatedAt` na kolumnie `CreatedAt` - optymalizacja sortowania po dacie utworzenia
+- `IX_diagrams_user_id` na kolumnie `user_id` - optymalizacja zapytań filtrujących po użytkowniku
+- `IX_diagrams_created_at` na kolumnie `created_at` - optymalizacja sortowania po dacie utworzenia
 
 ## Row Level Security (RLS)
 
@@ -50,19 +50,19 @@ ALTER TABLE diagrams ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Użytkownicy widzą tylko swoje diagramy"
 ON diagrams
 FOR ALL
-USING (auth.uid() = UserId);
+USING (auth.uid() = user_id);
 ```
 
 ## Dodatkowe uwagi
 
 1. Walidacja i ograniczenia:
    - Maksymalna liczba diagramów (100) per użytkownik jest egzekwowana w logice backendu
-   - Kolumna `Definition` i `Solution` przechowują dane sudoku w formacie ciągu znaków o długości 100 (9x9 plansza + separatory)
-   - Kolumna `Name` pozwala na długie nazwy diagramów (do 1000 znaków) dla elastyczności
+   - Kolumna `definition` i `solution` przechowują dane sudoku w formacie ciągu znaków o długości 100 (9x9 plansza + separatory)
+   - Kolumna `name` pozwala na długie nazwy diagramów (do 1000 znaków) dla elastyczności
 
 2. Optymalizacja:
-   - Indeks na `UserId` wspiera szybkie wyszukiwanie diagramów użytkownika
-   - Indeks na `CreatedAt` wspiera sortowanie chronologiczne
+   - Indeks na `user_id` wspiera szybkie wyszukiwanie diagramów użytkownika
+   - Indeks na `created_at` wspiera sortowanie chronologiczne
    - Kaskadowe usuwanie diagramów przy usunięciu użytkownika (ON DELETE CASCADE)
 
 3. Bezpieczeństwo:
