@@ -7,6 +7,7 @@ builder.Services.AddAuthorization();
 
 // App services
 builder.Services.AddSingleton<SudokuApi.Repositories.IDiagramRepository, SudokuApi.Repositories.SupabaseDiagramRepository>();
+builder.Services.AddSingleton<SudokuApi.Services.ISudokuSolver, SudokuApi.Services.BasicSudokuSolver>();
 builder.Services.AddSingleton<SudokuApi.Services.DiagramService>();
 
 var app = builder.Build();
@@ -94,6 +95,57 @@ app.MapGet("/diagrams", async (
         return Results.Problem(statusCode: 500, title: "Internal Server Error");
     }
 });
+
+app.MapPost("/diagrams/{id:long}/solve", async (
+    long id,
+    HttpRequest request,
+    SudokuApi.Services.DiagramService service,
+    CancellationToken cancellationToken) =>
+{
+    // TODO: Replace with real auth extraction; public scope for now
+    var userId = "public";
+
+    if (id <= 0)
+    {
+        return Results.BadRequest(new { code = "VALIDATION_ERROR", message = "id must be a positive integer", details = (string?)null });
+    }
+
+    try
+    {
+        var record = await service.GenerateAndSaveSolutionAsync(id, userId, cancellationToken);
+        return Results.Ok(new
+        {
+            id = record.Id,
+            name = record.Name,
+            definition = record.Definition,
+            solution = record.Solution,
+            created_at = record.CreatedAt,
+            updated_at = record.UpdatedAt
+        });
+    }
+    catch (SudokuApi.Services.DiagramService.ValidationException ex)
+    {
+        return Results.BadRequest(new { code = "VALIDATION_ERROR", message = ex.Message, details = (string?)null });
+    }
+    catch (SudokuApi.Services.DiagramService.NotFoundException)
+    {
+        return Results.NotFound(new { code = "NOT_FOUND", message = "Diagram not found", details = (string?)null });
+    }
+    catch (SudokuApi.Services.DiagramService.ConflictException ex)
+    {
+        return Results.Conflict(new { code = "CONFLICT", message = ex.Message, details = (string?)null });
+    }
+    catch (SudokuApi.Services.DiagramService.UnsolvableException)
+    {
+        return Results.BadRequest(new { code = "UNSOLVABLE", message = "Diagram jest nierozwiązywalny.", details = (string?)null });
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Failed to solve diagram {DiagramId}", id);
+        return Results.Problem(statusCode: 500, title: "Internal Server Error");
+    }
+})
+.WithName("SolveDiagram");
 
 app.Run();
 

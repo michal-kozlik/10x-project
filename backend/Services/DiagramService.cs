@@ -13,10 +13,12 @@ namespace SudokuApi.Services
         private const int MaxLimit = 100;
 
         private readonly IDiagramRepository _repository;
+        private readonly ISudokuSolver _solver;
 
-        public DiagramService(IDiagramRepository repository)
+        public DiagramService(IDiagramRepository repository, ISudokuSolver solver)
         {
             _repository = repository;
+            _solver = solver;
         }
 
         public sealed class QueryValidationResult
@@ -82,6 +84,86 @@ namespace SudokuApi.Services
             CancellationToken cancellationToken)
         {
             return await _repository.ListAsync(userId, page, limit, sortBy, filter, cancellationToken);
+        }
+
+        public sealed class NotFoundException : System.Exception
+        {
+            public NotFoundException(string message) : base(message) { }
+        }
+
+        public sealed class ValidationException : System.Exception
+        {
+            public ValidationException(string message) : base(message) { }
+        }
+
+        public sealed class ConflictException : System.Exception
+        {
+            public ConflictException(string message) : base(message) { }
+        }
+
+        public sealed class UnsolvableException : System.Exception
+        {
+            public UnsolvableException(string message) : base(message) { }
+        }
+
+        public async Task<DiagramRecord> GenerateAndSaveSolutionAsync(
+            long diagramId,
+            string userId,
+            CancellationToken cancellationToken)
+        {
+            if (diagramId <= 0)
+            {
+                throw new ValidationException("id must be a positive integer");
+            }
+
+            var existing = await _repository.GetByIdForUserAsync(diagramId, userId, cancellationToken);
+            if (existing is null)
+            {
+                throw new NotFoundException("Diagram not found");
+            }
+
+            if (string.IsNullOrWhiteSpace(existing.Definition))
+            {
+                throw new ValidationException("definition must be provided");
+            }
+
+            if (existing.Definition.Length > 10000)
+            {
+                throw new ValidationException("definition length must be <= 10000 characters");
+            }
+
+            string solution;
+            try
+            {
+                solution = _solver.Solve(existing.Definition, cancellationToken);
+            }
+            catch (UnsolvableException)
+            {
+                throw;
+            }
+            catch (System.OperationCanceledException)
+            {
+                throw;
+            }
+            catch (System.Exception ex)
+            {
+                throw new ValidationException($"solver failed: {ex.Message}");
+            }
+
+            var updated = await _repository.UpdateSolutionAsync(diagramId, solution, cancellationToken);
+            if (!updated)
+            {
+                throw new ConflictException("Failed to update solution");
+            }
+
+            var refreshed = await _repository.GetByIdForUserAsync(diagramId, userId, cancellationToken);
+            if (refreshed is null)
+            {
+                // Should not happen if update succeeded
+                throw new NotFoundException("Diagram not found after update");
+            }
+
+            return refreshed;
         }
     }
 }

@@ -42,6 +42,39 @@ namespace SudokuApi.Repositories
 
             return Task.FromResult(((IReadOnlyList<DiagramRecord>)items, total));
         }
+
+        public Task<DiagramRecord?> GetByIdForUserAsync(
+            long id,
+            string userId,
+            CancellationToken cancellationToken)
+        {
+            if (!_userIdToDiagrams.TryGetValue(userId, out var list))
+            {
+                return Task.FromResult<DiagramRecord?>(null);
+            }
+
+            var found = list.FirstOrDefault(d => d.Id == id);
+            return Task.FromResult(found);
+        }
+
+        public Task<bool> UpdateSolutionAsync(
+            long id,
+            string solution,
+            CancellationToken cancellationToken)
+        {
+            foreach (var kvp in _userIdToDiagrams)
+            {
+                var diagram = kvp.Value.FirstOrDefault(d => d.Id == id);
+                if (diagram is not null)
+                {
+                    diagram.Solution = solution;
+                    diagram.UpdatedAt = DateTime.UtcNow.ToString("o");
+                    return Task.FromResult(true);
+                }
+            }
+
+            return Task.FromResult(false);
+        }
     }
 }
 

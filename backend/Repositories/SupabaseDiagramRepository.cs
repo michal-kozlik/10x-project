@@ -92,6 +92,55 @@ namespace SudokuApi.Repositories
 
             return (items, total);
         }
+
+        public async Task<DiagramRecord?> GetByIdForUserAsync(
+            long id,
+            string userId,
+            CancellationToken cancellationToken)
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            // TODO: When per-user ownership exists, filter by userId column.
+            var sql = @"SELECT id, name, definition, solution, created_at FROM diagrams WHERE id = @id LIMIT 1;";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
+            {
+                return new DiagramRecord
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                    Definition = reader.GetString(2),
+                    Solution = reader.IsDBNull(3) ? null : reader.GetString(3),
+                    CreatedAt = reader.GetFieldValue<DateTime>(4).ToUniversalTime().ToString("o"),
+                    UpdatedAt = null
+                };
+            }
+
+            return null;
+        }
+
+        public async Task<bool> UpdateSolutionAsync(
+            long id,
+            string solution,
+            CancellationToken cancellationToken)
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            var sql = @"UPDATE diagrams SET solution = @solution WHERE id = @id;";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.Add(new NpgsqlParameter("@solution", NpgsqlTypes.NpgsqlDbType.Text) { Value = solution });
+            cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+
+            var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
+            return affected > 0;
+        }
     }
 }
 

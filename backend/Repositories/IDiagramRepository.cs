@@ -13,6 +13,16 @@ namespace SudokuApi.Repositories
             string? sortBy,
             string? filter,
             CancellationToken cancellationToken);
+
+        Task<DiagramRecord?> GetByIdForUserAsync(
+            long id,
+            string userId,
+            CancellationToken cancellationToken);
+
+        Task<bool> UpdateSolutionAsync(
+            long id,
+            string solution,
+            CancellationToken cancellationToken);
     }
 
     public sealed class DiagramRecord
