@@ -86,9 +86,7 @@ namespace SudokuApi.Repositories
             }
 
             if (await reader.NextResultAsync(cancellationToken) && await reader.ReadAsync(cancellationToken))
-            {
                 total = reader.GetInt32(0);
-            }
 
             return (items, total);
         }

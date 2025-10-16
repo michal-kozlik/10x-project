@@ -18,9 +18,7 @@ namespace SudokuApi.Repositories
             CancellationToken cancellationToken)
         {
             if (!_userIdToDiagrams.TryGetValue(userId, out var list))
-            {
                 return Task.FromResult(((IReadOnlyList<DiagramRecord>)new List<DiagramRecord>(), 0));
-            }
 
             IEnumerable<DiagramRecord> query = list;
 
@@ -49,9 +47,7 @@ namespace SudokuApi.Repositories
             CancellationToken cancellationToken)
         {
             if (!_userIdToDiagrams.TryGetValue(userId, out var list))
-            {
                 return Task.FromResult<DiagramRecord?>(null);
-            }
 
             var found = list.FirstOrDefault(d => d.Id == id);
             return Task.FromResult(found);

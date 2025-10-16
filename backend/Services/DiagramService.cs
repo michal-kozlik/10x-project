@@ -36,23 +36,17 @@ namespace SudokuApi.Services
             var normalizedLimit = limit ?? DefaultLimit;
 
             if (normalizedPage < 1)
-            {
                 return new QueryValidationResult { Error = "page must be >= 1" };
-            }
 
             if (normalizedLimit < 1 || normalizedLimit > MaxLimit)
-            {
                 return new QueryValidationResult { Error = $"limit must be between 1 and {MaxLimit}" };
-            }
 
             string? normalizedSortBy = null;
             if (!string.IsNullOrWhiteSpace(sortBy))
             {
                 var s = sortBy.Trim().ToLowerInvariant();
                 if (s is not ("created_at" or "name" or "id"))
-                {
                     return new QueryValidationResult { Error = "sortBy must be one of: created_at, name, id" };
-                }
                 normalizedSortBy = s;
             }
 
@@ -60,9 +54,7 @@ namespace SudokuApi.Services
             if (!string.IsNullOrEmpty(filter))
             {
                 if (filter.Length > 1000)
-                {
                     return new QueryValidationResult { Error = "filter length must be <= 1000" };
-                }
                 normalizedFilter = filter;
             }
 
@@ -112,25 +104,17 @@ namespace SudokuApi.Services
             CancellationToken cancellationToken)
         {
             if (diagramId <= 0)
-            {
                 throw new ValidationException("id must be a positive integer");
-            }
 
             var existing = await _repository.GetByIdForUserAsync(diagramId, userId, cancellationToken);
             if (existing is null)
-            {
                 throw new NotFoundException("Diagram not found");
-            }
 
             if (string.IsNullOrWhiteSpace(existing.Definition))
-            {
                 throw new ValidationException("definition must be provided");
-            }
 
             if (existing.Definition.Length > 10000)
-            {
                 throw new ValidationException("definition length must be <= 10000 characters");
-            }
 
             string solution;
             try
@@ -152,9 +136,7 @@ namespace SudokuApi.Services
 
             var updated = await _repository.UpdateSolutionAsync(diagramId, solution, cancellationToken);
             if (!updated)
-            {
                 throw new ConflictException("Failed to update solution");
-            }
 
             var refreshed = await _repository.GetByIdForUserAsync(diagramId, userId, cancellationToken);
             if (refreshed is null)

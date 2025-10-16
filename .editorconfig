@@ -1,0 +1,8 @@
+# Styl C#
+[*.cs]
+
+# Nie preferuj klamer dla jednoliniowych bloków (if/else/for/while/foreach/using)
+csharp_prefer_braces = false:suggestion
+
+# (Opcjonalnie) całkiem wyłącz nagabywanie o klamry
+dotnet_diagnostic.IDE0011.severity = none

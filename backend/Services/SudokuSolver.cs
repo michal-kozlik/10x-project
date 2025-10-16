@@ -15,18 +15,14 @@ namespace SudokuApi.Services
         public string Solve(string definition, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(definition))
-            {
                 throw new DiagramService.ValidationException("definition must be provided");
-            }
 
             cancellationToken.ThrowIfCancellationRequested();
 
             // Normalize input: keep digits and ' '
             var normalized = new string(definition.Where(ch => char.IsDigit(ch) || ch == ' ').ToArray());
             if (normalized.Length != 9*9)
-            {
                 throw new DiagramService.ValidationException("definition must contain exactly 81 cells (digits or ' ')");
-            }
 
             var grid = new int[9, 9];
             for (int i = 0; i < 9*9; i++)
@@ -36,29 +32,21 @@ namespace SudokuApi.Services
                 int r = i / 9;
                 int c = i % 9;
                 if (ch == ' ')
-                {
                     grid[r, c] = 0;
-                }
                 else if (ch >= '1' && ch <= '9')
                 {
                     int val = ch - '0';
                     grid[r, c] = val;
                 }
                 else
-                {
                     throw new DiagramService.ValidationException("definition contains invalid characters");
-                }
             }
 
             if (!IsValidInitialGrid(grid))
-            {
                 throw new DiagramService.ValidationException("definition violates Sudoku constraints");
-            }
 
             if (!Backtrack(grid, 0, 0, cancellationToken))
-            {
                 throw new DiagramService.UnsolvableException("Sudoku is unsolvable");
-            }
 
             var sb = new StringBuilder(9*9);
             for (int r = 0; r < 9; r++)
