@@ -1,0 +1,98 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Npgsql;
+
+namespace SudokuApi.Repositories
+{
+    public sealed class SupabaseDiagramRepository : IDiagramRepository
+    {
+        private readonly string _connectionString;
+
+        public SupabaseDiagramRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("SupabaseDb")
+                ?? throw new InvalidOperationException("Connection string 'SupabaseDb' is not configured.");
+        }
+
+        public async Task<(IReadOnlyList<DiagramRecord> Items, int Total)> ListAsync(
+            string userId,
+            int page,
+            int limit,
+            string? sortBy,
+            string? filter,
+            CancellationToken cancellationToken)
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            var whereClauses = new List<string>();
+            var parameters = new List<NpgsqlParameter>();
+
+            // If you later add auth, you can filter user_id here. For now, show all diagrams.
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                whereClauses.Add("name ILIKE @filter");
+                parameters.Add(new NpgsqlParameter("@filter", NpgsqlTypes.NpgsqlDbType.Text) { Value = "%" + filter + "%" });
+            }
+
+            var whereSql = whereClauses.Count > 0 ? ("WHERE " + string.Join(" AND ", whereClauses)) : string.Empty;
+
+            var orderBy = sortBy switch
+            {
+                "name" => "ORDER BY name ASC",
+                "id" => "ORDER BY id ASC",
+                _ => "ORDER BY created_at DESC"
+            };
+
+            var offset = (page - 1) * limit;
+
+            var sql = $@"
+                SELECT id, name, definition, solution, created_at
+                FROM diagrams
+                {whereSql}
+                {orderBy}
+                LIMIT @limit OFFSET @offset;
+
+                SELECT COUNT(*) FROM diagrams {whereSql};";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            foreach (var p in parameters)
+            {
+                cmd.Parameters.Add(p);
+            }
+            cmd.Parameters.Add(new NpgsqlParameter("@limit", NpgsqlTypes.NpgsqlDbType.Integer) { Value = limit });
+            cmd.Parameters.Add(new NpgsqlParameter("@offset", NpgsqlTypes.NpgsqlDbType.Integer) { Value = offset });
+
+            var items = new List<DiagramRecord>();
+            int total = 0;
+
+            await using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var record = new DiagramRecord
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                    Definition = reader.GetString(2),
+                    Solution = reader.IsDBNull(3) ? null : reader.GetString(3),
+                    CreatedAt = reader.GetFieldValue<DateTime>(4).ToUniversalTime().ToString("o"),
+                    UpdatedAt = null
+                };
+                items.Add(record);
+            }
+
+            if (await reader.NextResultAsync(cancellationToken) && await reader.ReadAsync(cancellationToken))
+            {
+                total = reader.GetInt32(0);
+            }
+
+            return (items, total);
+        }
+    }
+}
+
+
