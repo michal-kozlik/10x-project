@@ -6,3 +6,12 @@ csharp_prefer_braces = false:suggestion
 
 # (Opcjonalnie) całkiem wyłącz nagabywanie o klamry
 dotnet_diagnostic.IDE0011.severity = none
+
+# Wyłącz formatowanie jednoliniowe dla if/else/for/while/using
+csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = false
+
+# Wcięcia
+indent_style = space
+indent_size = 4
+continuation_indent_size = 4

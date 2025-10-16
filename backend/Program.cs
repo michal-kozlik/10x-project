@@ -50,8 +50,10 @@ app.MapGet("/diagrams", async (
     string? sortBy = null;
     string? filter = null;
 
-    if (int.TryParse(request.Query["page"], out var p)) page = p;
-    if (int.TryParse(request.Query["limit"], out var l)) limit = l;
+    if (int.TryParse(request.Query["page"], out var p))
+        page = p;
+    if (int.TryParse(request.Query["limit"], out var l))
+        limit = l;
     sortBy = request.Query["sortBy"].ToString();
     filter = request.Query["filter"].ToString();
 

@@ -69,8 +69,10 @@ namespace SudokuApi.Services
                 for (int c = 0; c < 9; c++)
                 {
                     int v = grid[r, c];
-                    if (v == 0) continue;
-                    if (seen[v]) return false;
+                    if (v == 0)
+                        continue;
+                    if (seen[v])
+                        return false;
                     seen[v] = true;
                 }
             }
@@ -81,8 +83,10 @@ namespace SudokuApi.Services
                 for (int r = 0; r < 9; r++)
                 {
                     int v = grid[r, c];
-                    if (v == 0) continue;
-                    if (seen[v]) return false;
+                    if (v == 0)
+                        continue;
+                    if (seen[v])
+                        return false;
                     seen[v] = true;
                 }
             }
@@ -97,8 +101,10 @@ namespace SudokuApi.Services
                         for (int c = 0; c < 3; c++)
                         {
                             int v = grid[br + r, bc + c];
-                            if (v == 0) continue;
-                            if (seen[v]) return false;
+                            if (v == 0)
+                                continue;
+                            if (seen[v])
+                                return false;
                             seen[v] = true;
                         }
                     }
@@ -112,16 +118,20 @@ namespace SudokuApi.Services
         {
             ct.ThrowIfCancellationRequested();
 
-            if (row == 9) return true; // solved
-            if (col == 9) return Backtrack(grid, row + 1, 0, ct);
-            if (grid[row, col] != 0) return Backtrack(grid, row, col + 1, ct);
+            if (row == 9)
+                return true; // solved
+            if (col == 9)
+                return Backtrack(grid, row + 1, 0, ct);
+            if (grid[row, col] != 0)
+                return Backtrack(grid, row, col + 1, ct);
 
             for (int val = 1; val <= 9; val++)
             {
                 if (IsSafe(grid, row, col, val))
                 {
                     grid[row, col] = val;
-                    if (Backtrack(grid, row, col + 1, ct)) return true;
+                    if (Backtrack(grid, row, col + 1, ct))
+                        return true;
                     grid[row, col] = 0;
                 }
             }
@@ -131,8 +141,12 @@ namespace SudokuApi.Services
 
         private static bool IsSafe(int[,] grid, int row, int col, int val)
         {
-            for (int c = 0; c < 9; c++) if (grid[row, c] == val) return false;
-            for (int r = 0; r < 9; r++) if (grid[r, col] == val) return false;
+            for (int c = 0; c < 9; c++)
+                if (grid[row, c] == val)
+                    return false;
+            for (int r = 0; r < 9; r++)
+                if (grid[r, col] == val)
+                    return false;
 
             int br = (row / 3) * 3;
             int bc = (col / 3) * 3;
@@ -140,7 +154,8 @@ namespace SudokuApi.Services
             {
                 for (int c = 0; c < 3; c++)
                 {
-                    if (grid[br + r, bc + c] == val) return false;
+                    if (grid[br + r, bc + c] == val)
+                        return false;
                 }
             }
 
