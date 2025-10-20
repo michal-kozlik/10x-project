@@ -1,0 +1,19 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SessionGuard from "../components/SessionGuard";
+import DiagramsPanel from "../components/diagrams/DiagramsPanel";
+import EditorPanel from "../components/editor/EditorPanel";
+---
+
+<Layout title="Dashboard - Sudoku">
+  <SessionGuard client:load>
+    <div class="flex h-screen overflow-hidden">
+      <div class="w-1/3 overflow-y-auto border-r">
+        <DiagramsPanel client:load />
+      </div>
+      <div class="flex-1 overflow-y-auto">
+        <EditorPanel client:load />
+      </div>
+    </div>
+  </SessionGuard>
+</Layout>
