@@ -23,6 +23,19 @@ namespace SudokuApi.Repositories
             long id,
             string solution,
             CancellationToken cancellationToken);
+            
+        Task<DiagramRecord> CreateAsync(
+            string userId,
+            string name,
+            string definition,
+            CancellationToken cancellationToken);
+            
+        Task<bool> UpdateAsync(
+            long id,
+            string userId,
+            string name,
+            string definition,
+            CancellationToken cancellationToken);
     }
 
     public sealed class DiagramRecord

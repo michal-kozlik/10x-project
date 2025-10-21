@@ -139,6 +139,65 @@ namespace SudokuApi.Repositories
             var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
             return affected > 0;
         }
+
+        public async Task<DiagramRecord> CreateAsync(
+            string userId,
+            string name,
+            string definition,
+            CancellationToken cancellationToken)
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            var sql = @"
+                INSERT INTO diagrams (name, definition, created_at)
+                VALUES (@name, @definition, NOW())
+                RETURNING id, name, definition, solution, created_at;";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.Add(new NpgsqlParameter("@name", NpgsqlTypes.NpgsqlDbType.Text) { Value = name });
+            cmd.Parameters.Add(new NpgsqlParameter("@definition", NpgsqlTypes.NpgsqlDbType.Text) { Value = definition });
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
+            {
+                return new DiagramRecord
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                    Definition = reader.GetString(2),
+                    Solution = reader.IsDBNull(3) ? null : reader.GetString(3),
+                    CreatedAt = reader.GetFieldValue<DateTime>(4).ToUniversalTime().ToString("o"),
+                    UpdatedAt = null
+                };
+            }
+
+            throw new InvalidOperationException("Failed to create diagram");
+        }
+
+        public async Task<bool> UpdateAsync(
+            long id,
+            string userId,
+            string name,
+            string definition,
+            CancellationToken cancellationToken)
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            var sql = @"
+                UPDATE diagrams 
+                SET name = @name, definition = @definition, solution = NULL 
+                WHERE id = @id;";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.Add(new NpgsqlParameter("@name", NpgsqlTypes.NpgsqlDbType.Text) { Value = name });
+            cmd.Parameters.Add(new NpgsqlParameter("@definition", NpgsqlTypes.NpgsqlDbType.Text) { Value = definition });
+            cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+
+            var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
+            return affected > 0;
+        }
     }
 }
 
