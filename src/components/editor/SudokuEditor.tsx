@@ -45,7 +45,7 @@ export function SudokuEditor({
   };
 
   const handleSave = useCallback(() => {
-    onSave({ name: name.trim(), definition: definition.trim() });
+    onSave({ name: name.trim(), definition });
   }, [name, definition, onSave]);
 
   const handleSolve = useCallback(() => {
