@@ -36,6 +36,11 @@ namespace SudokuApi.Repositories
             string name,
             string definition,
             CancellationToken cancellationToken);
+
+        Task<bool> DeleteAsync(
+            long id,
+            string userId,
+            CancellationToken cancellationToken);
     }
 
     public sealed class DiagramRecord

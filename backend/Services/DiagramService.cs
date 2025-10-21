@@ -209,6 +209,25 @@ namespace SudokuApi.Services
 
             return refreshed;
         }
+
+        public async Task<bool> DeleteDiagramAsync(
+            long id,
+            string userId,
+            CancellationToken cancellationToken)
+        {
+            if (id <= 0)
+                throw new ValidationException("id must be a positive integer");
+
+            var existing = await _repository.GetByIdForUserAsync(id, userId, cancellationToken);
+            if (existing is null)
+                throw new NotFoundException("Diagram not found");
+
+            var deleted = await _repository.DeleteAsync(id, userId, cancellationToken);
+            if (!deleted)
+                throw new ConflictException("Failed to delete diagram");
+
+            return true;
+        }
     }
 }
 

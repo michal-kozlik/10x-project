@@ -217,4 +217,37 @@ app.MapPost("/diagrams/{id:long}/solve", async (
 })
 .WithName("SolveDiagram");
 
+app.MapDelete("/diagrams/{id:long}", async (
+    long id,
+    SudokuApi.Services.DiagramService service,
+    CancellationToken cancellationToken) =>
+{
+    // TODO: Replace with real auth extraction; public scope for now
+    var userId = "public";
+
+    try
+    {
+        await service.DeleteDiagramAsync(id, userId, cancellationToken);
+        return Results.Ok(new { message = "Diagram został usunięty." });
+    }
+    catch (SudokuApi.Services.DiagramService.ValidationException ex)
+    {
+        return Results.BadRequest(new { code = "VALIDATION_ERROR", message = ex.Message, details = (string?)null });
+    }
+    catch (SudokuApi.Services.DiagramService.NotFoundException)
+    {
+        return Results.NotFound(new { code = "NOT_FOUND", message = "Diagram not found", details = (string?)null });
+    }
+    catch (SudokuApi.Services.DiagramService.ConflictException ex)
+    {
+        return Results.Conflict(new { code = "CONFLICT", message = ex.Message, details = (string?)null });
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Failed to delete diagram {DiagramId}", id);
+        return Results.Problem(statusCode: 500, title: "Internal Server Error");
+    }
+})
+.WithName("DeleteDiagram");
+
 app.Run();

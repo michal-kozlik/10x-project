@@ -1,6 +1,17 @@
 @SudokuApi_HostAddress = http://localhost:5149
 
-GET {{SudokuApi_HostAddress}}/weatherforecast/
+### Delete an existing diagram
+DELETE {{SudokuApi_HostAddress}}/diagrams/1
 Accept: application/json
 
-###
+### Try to delete a non-existent diagram
+DELETE {{SudokuApi_HostAddress}}/diagrams/99999
+Accept: application/json
+
+### Try to delete with invalid ID
+DELETE {{SudokuApi_HostAddress}}/diagrams/-1
+Accept: application/json
+
+### Try to delete with non-numeric ID
+DELETE {{SudokuApi_HostAddress}}/diagrams/abc
+Accept: application/json

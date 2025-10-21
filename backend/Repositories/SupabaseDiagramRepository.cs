@@ -198,6 +198,24 @@ namespace SudokuApi.Repositories
             var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
             return affected > 0;
         }
+
+        public async Task<bool> DeleteAsync(
+            long id,
+            string userId,
+            CancellationToken cancellationToken)
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            // TODO: When per-user ownership exists, filter by userId column.
+            var sql = @"DELETE FROM diagrams WHERE id = @id;";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+
+            var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
+            return affected > 0;
+        }
     }
 }
 
