@@ -4,13 +4,13 @@ import { cn } from "../../lib/utils";
 interface SortableHeaderProps {
   label: string;
   sortKey: string;
-  currentSort: string;
+  currentSort?: string;
   onClick: (sortKey: string) => void;
 }
 
-export function SortableHeader({ label, sortKey, currentSort, onClick }: SortableHeaderProps) {
-  const isActive = currentSort.replace(/^-/, "") === sortKey;
-  const isDesc = currentSort.startsWith("-");
+export function SortableHeader({ label, sortKey, currentSort = "", onClick }: SortableHeaderProps) {
+  const isActive = currentSort?.replace(/^-/, "") === sortKey;
+  const isDesc = currentSort?.startsWith("-") ?? false;
 
   return (
     <th
