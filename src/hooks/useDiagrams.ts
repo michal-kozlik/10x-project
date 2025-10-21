@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import type { DiagramDTO, ListDiagramsQuery, ListDiagramsResponseDTO } from "../types";
-import { Events, dispatchGlobalEvent } from "../lib/events";
+import { Events, dispatchGlobalEvent, addGlobalEventListener } from "../lib/events";
 import { showToast } from "../lib/toast";
 
 interface TableState {
@@ -47,6 +47,12 @@ export function useDiagrams() {
 
   useEffect(() => {
     fetchDiagrams(tableState);
+  }, [fetchDiagrams, tableState]);
+
+  useEffect(() => {
+    return addGlobalEventListener(Events.DIAGRAM_UPDATE, () => {
+      fetchDiagrams(tableState);
+    });
   }, [fetchDiagrams, tableState]);
 
   const setFilter = useCallback((filter: string) => {
