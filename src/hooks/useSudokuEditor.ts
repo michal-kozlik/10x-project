@@ -3,6 +3,8 @@ import type { DiagramDTO } from "../types";
 import { Events, addGlobalEventListener, dispatchGlobalEvent } from "../lib/events";
 import { showToast } from "../lib/toast";
 
+type SetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
+
 interface EditorState {
   diagram: DiagramDTO | null;
   isDirty: boolean;
@@ -35,8 +37,26 @@ export function useSudokuEditor() {
     return addGlobalEventListener(Events.DIAGRAM_SELECT, handleDiagramSelect);
   }, [editorState.isDirty]);
 
+  const updateContent = useCallback(
+    (name: string, definition: string) => {
+      if (!editorState.diagram) {
+        setEditorState((prev) => ({
+          ...prev,
+          isDirty: definition !== "",
+        }));
+      } else {
+        setEditorState((prev) => ({
+          ...prev,
+          isDirty:
+            definition !== prev.diagram?.definition || (name !== prev.diagram?.name && prev.diagram.name !== null),
+        }));
+      }
+    },
+    [editorState.diagram]
+  );
+
   const onSave = useCallback(
-    async (name: string, definition: string) => {
+    async (data: { name: string; definition: string }) => {
       if (editorState.validationErrors.length > 0) {
         return;
       }
@@ -51,7 +71,7 @@ export function useSudokuEditor() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name, definition }),
+          body: JSON.stringify(data),
         });
 
         if (!response.ok) {
@@ -120,5 +140,6 @@ export function useSudokuEditor() {
     onSave,
     onSolve,
     onClear,
+    updateContent,
   };
 }
