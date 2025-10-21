@@ -38,13 +38,13 @@ export function DiagramsTable({ diagrams, isLoading, onSort, onSelect, sortBy }:
               onClick={() => onSelect(diagram)}
               className="border-b hover:bg-muted/50 cursor-pointer"
             >
-              <td className="px-4 py-2">{diagram.name}</td>
-              <td className="px-4 py-2">{formatDate(diagram.created_at)}</td>
-              <td className="px-4 py-2">
+              <td className="px-1 py-2">{diagram.name}</td>
+              <td className="px-1 py-2">{formatDate(diagram.created_at)}</td>
+              <td className="px-1 py-2">
                 {diagram.updated_at ? formatDate(diagram.updated_at) : formatDate(diagram.created_at)}
               </td>
-              <td className="px-4 py-2 font-mono">{diagram.definition}</td>
-              <td className="px-4 py-2">
+              <td className="px-1 py-2 font-mono whitespace-pre">{diagram.definition}</td>
+              <td className="px-1 py-2">
                 {diagram.solution ? (
                   <span title="Rozwiązane" className="text-green-500">
                     ✓

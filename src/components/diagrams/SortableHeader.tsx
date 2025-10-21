@@ -15,7 +15,7 @@ export function SortableHeader({ label, sortKey, currentSort = "", onClick }: So
   return (
     <th
       onClick={() => onClick(isActive && !isDesc ? `-${sortKey}` : sortKey)}
-      className={cn("px-4 py-2 text-left cursor-pointer select-none", isActive && "font-semibold")}
+      className={cn("px-1 py-2 text-left cursor-pointer select-none", isActive && "font-semibold")}
     >
       <div className="flex items-center gap-1">
         {label}
