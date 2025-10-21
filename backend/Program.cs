@@ -133,9 +133,7 @@ app.MapGet("/diagrams", async (
 
     var validation = service.ValidateQuery(page, limit, sortBy, filter);
     if (validation.Error is not null)
-    {
         return Results.BadRequest(new { error = validation.Error });
-    }
 
     try
     {
@@ -180,9 +178,7 @@ app.MapPost("/diagrams/{id:long}/solve", async (
     var userId = "public";
 
     if (id <= 0)
-    {
         return Results.BadRequest(new { code = "VALIDATION_ERROR", message = "id must be a positive integer", details = (string?)null });
-    }
 
     try
     {
