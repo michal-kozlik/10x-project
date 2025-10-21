@@ -71,6 +71,34 @@ export function useDiagrams() {
     dispatchGlobalEvent(Events.DIAGRAM_SELECT, diagram);
   }, []);
 
+  const deleteDiagram = useCallback(
+    async (id: number) => {
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/diagrams/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete diagram");
+        }
+
+        showToast.success("Diagram deleted successfully");
+        // Refresh the diagrams list
+        fetchDiagrams(tableState);
+        // If this was the selected diagram, clear the selection
+        dispatchGlobalEvent(Events.DIAGRAM_SELECT, null);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to delete diagram";
+        setError(message);
+        showToast.error(message);
+        throw err;
+      }
+    },
+    [fetchDiagrams, tableState]
+  );
+
   return {
     diagrams,
     pagination,
@@ -81,5 +109,6 @@ export function useDiagrams() {
     setSort,
     setPage,
     selectDiagram,
+    deleteDiagram,
   };
 }
