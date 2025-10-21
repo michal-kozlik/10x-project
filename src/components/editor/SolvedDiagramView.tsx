@@ -23,7 +23,7 @@ export function SolvedDiagramView({ solution }: SolvedDiagramViewProps) {
               key={index}
               className={`
                 flex items-center justify-center
-                h-8 w-8 sm:h-10 sm:w-10
+                h-8 w-8 sm:h-6 sm:w-6
                 bg-background font-mono text-lg
                 ${col % 3 === 2 && col !== 8 ? "border-r-2 border-r-muted" : ""}
                 ${row % 3 === 2 && row !== 8 ? "border-b-2 border-b-muted" : ""}

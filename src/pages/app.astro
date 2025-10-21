@@ -8,10 +8,10 @@ import EditorPanel from "../components/editor/EditorPanel";
 <Layout title="Dashboard - Sudoku">
   <SessionGuard client:load>
     <div class="flex h-screen overflow-hidden">
-      <div class="w-1/3 overflow-y-auto border-r">
+      <div class="w-4/5 overflow-y-auto border-r">
         <DiagramsPanel client:load />
       </div>
-      <div class="flex-1 overflow-y-auto">
+      <div class="w-1/5 overflow-y-auto">
         <EditorPanel client:load />
       </div>
     </div>

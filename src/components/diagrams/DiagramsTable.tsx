@@ -24,9 +24,11 @@ export function DiagramsTable({ diagrams, isLoading, onSort, onSelect, sortBy }:
       <table className="w-full">
         <thead>
           <tr className="border-b">
-            <SortableHeader label="Name" sortKey="name" currentSort={sortBy} onClick={onSort} />
-            <SortableHeader label="Created" sortKey="created_at" currentSort={sortBy} onClick={onSort} />
-            <th className="px-4 py-2 text-left">Status</th>
+            <SortableHeader label="Nazwa" sortKey="name" currentSort={sortBy} onClick={onSort} />
+            <SortableHeader label="Utworzono" sortKey="created_at" currentSort={sortBy} onClick={onSort} />
+            <SortableHeader label="Zaktualiz." sortKey="updated_at" currentSort={sortBy} onClick={onSort} />
+            <SortableHeader label="Definicja" sortKey="definition" currentSort={sortBy} onClick={onSort} />
+            <SortableHeader label="Status" sortKey="solution" currentSort={sortBy} onClick={onSort} />
           </tr>
         </thead>
         <tbody>
@@ -38,7 +40,21 @@ export function DiagramsTable({ diagrams, isLoading, onSort, onSelect, sortBy }:
             >
               <td className="px-4 py-2">{diagram.name}</td>
               <td className="px-4 py-2">{formatDate(diagram.created_at)}</td>
-              <td className="px-4 py-2">{diagram.solution ? "Solved" : "Unsolved"}</td>
+              <td className="px-4 py-2">
+                {diagram.updated_at ? formatDate(diagram.updated_at) : formatDate(diagram.created_at)}
+              </td>
+              <td className="px-4 py-2 font-mono">{diagram.definition}</td>
+              <td className="px-4 py-2">
+                {diagram.solution ? (
+                  <span title="Rozwiązane" className="text-green-500">
+                    ✓
+                  </span>
+                ) : (
+                  <span title="Nierozwiązane" className="text-gray-400">
+                    ○
+                  </span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
