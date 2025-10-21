@@ -7,12 +7,21 @@ interface SudokuTextareaProps {
   onChange: (value: string) => void;
 }
 
+const stringToGrid = (str: string): string => {
+  return Array.from({ length: 9 }, (_, i) => str.slice(i * 9, (i + 1) * 9)).join("\n");
+};
+
+const gridToString = (grid: string): string => {
+  return grid.replace(/\n/g, "");
+};
+
 interface ValidationResult {
   isValid: boolean;
   errors: string[];
 }
 
 export function SudokuTextarea({ id, value, onChange }: SudokuTextareaProps) {
+  const [gridValue, setGridValue] = useState(() => stringToGrid(value));
   const [validationResult, setValidationResult] = useState<ValidationResult>({
     isValid: true,
     errors: [],
@@ -94,7 +103,7 @@ export function SudokuTextarea({ id, value, onChange }: SudokuTextareaProps) {
   }, []);
 
   useEffect(() => {
-    const result = validateSudoku(value);
+    const result = validateSudoku(gridValue);
     setValidationResult(result);
     // Custom event for validation result
     window.dispatchEvent(
@@ -102,13 +111,24 @@ export function SudokuTextarea({ id, value, onChange }: SudokuTextareaProps) {
         detail: result.errors,
       })
     );
-  }, [value, validateSudoku]);
+  }, [gridValue, validateSudoku]);
+
+  // Update grid when external value changes
+  useEffect(() => {
+    setGridValue(stringToGrid(value));
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newGridValue = e.target.value;
+    setGridValue(newGridValue);
+    onChange(gridToString(newGridValue));
+  };
 
   return (
     <Textarea
       id={id}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
+      value={gridValue}
+      onChange={handleChange}
       className="font-mono"
       rows={9}
       spellCheck={false}
