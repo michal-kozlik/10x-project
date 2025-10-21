@@ -1,5 +1,7 @@
 ---
 import "../styles/global.css";
+import { Toaster } from "@/components/Toaster";
+import { supabaseClient } from "@/db/supabase.client";
 
 interface Props {
   title?: string;
@@ -19,8 +21,14 @@ const { title = "10x Astro Starter" } = Astro.props;
   </head>
   <body>
     <slot />
+    <Toaster client:load />
   </body>
 </html>
+
+<script>
+  import {supabaseClient} from "@/db/supabase.client"; // Make Supabase client available globally window.supabase =
+supabaseClient;
+</script>
 
 <style>
   html,

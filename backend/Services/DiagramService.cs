@@ -11,6 +11,8 @@ namespace SudokuApi.Services
         private const int DefaultPage = 1;
         private const int DefaultLimit = 10;
         private const int MaxLimit = 100;
+        private const int MaxDefinitionLength = 10000;
+        private const int MaxNameLength = 100;
 
         private readonly IDiagramRepository _repository;
         private readonly ISudokuSolver _solver;
@@ -19,6 +21,66 @@ namespace SudokuApi.Services
         {
             _repository = repository;
             _solver = solver;
+        }
+
+        private void ValidateDiagramInput(string name, string definition)
+        {
+            if (string.IsNullOrWhiteSpace(definition))
+                throw new ValidationException("definition must be provided");
+
+            if (definition.Length > MaxDefinitionLength)
+                throw new ValidationException($"definition length must be <= {MaxDefinitionLength} characters");
+
+            if (name?.Length > MaxNameLength)
+                throw new ValidationException($"name length must be <= {MaxNameLength} characters");
+        }
+
+        public async Task<DiagramRecord> CreateDiagramAsync(
+            string userId,
+            string name,
+            string definition,
+            CancellationToken cancellationToken)
+        {
+            ValidateDiagramInput(name, definition);
+
+            try 
+            {
+                return await _repository.CreateAsync(userId, name, definition, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new ValidationException($"Failed to create diagram: {ex.Message}");
+            }
+        }
+
+        public async Task<DiagramRecord> UpdateDiagramAsync(
+            long id,
+            string userId,
+            string name,
+            string definition,
+            CancellationToken cancellationToken)
+        {
+            if (id <= 0)
+                throw new ValidationException("id must be a positive integer");
+
+            ValidateDiagramInput(name, definition);
+
+            var existing = await _repository.GetByIdForUserAsync(id, userId, cancellationToken);
+            if (existing is null)
+                throw new NotFoundException("Diagram not found");
+
+            var updated = await _repository.UpdateAsync(id, userId, name, definition, cancellationToken);
+            if (!updated)
+                throw new ConflictException("Failed to update diagram");
+
+            var refreshed = await _repository.GetByIdForUserAsync(id, userId, cancellationToken);
+            if (refreshed is null)
+            {
+                // Should not happen if update succeeded
+                throw new NotFoundException("Diagram not found after update");
+            }
+
+            return refreshed;
         }
 
         public sealed class QueryValidationResult
