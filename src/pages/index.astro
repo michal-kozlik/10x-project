@@ -1,8 +1,15 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+if (Astro.request.method === "GET") {
+  return Astro.redirect("/app");
+}
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+<script>
+  window.location.href = "/app";
+</script>
+
+<noscript>
+  <meta http-equiv="refresh" content="0;url=/app" />
+</noscript>
+
+<p>Redirecting to app...</p>
