@@ -9,7 +9,11 @@ interface SudokuTextareaProps {
 
 // Format the string into 9 lines when it has exactly 81 characters
 const stringToGrid = (str: string): string => {
-  return str.length === 81 ? Array.from({ length: 9 }, (_, i) => str.slice(i * 9, (i + 1) * 9)).join("\n") : str;
+  return str.length === 81
+    ? Array.from({ length: 9 }, (_, i) => str.slice(i * 9, (i + 1) * 9)).join(
+        "\n",
+      )
+    : str;
 };
 
 // Transform grid (with newlines) to a single line string
@@ -32,6 +36,13 @@ export function SudokuTextarea({ id, value, onChange }: SudokuTextareaProps) {
   };
 
   return (
-    <Textarea id={id} value={gridValue} onChange={handleChange} className="font-mono" rows={9} spellCheck={false} />
+    <Textarea
+      id={id}
+      value={gridValue}
+      onChange={handleChange}
+      className="font-mono"
+      rows={9}
+      spellCheck={false}
+    />
   );
 }

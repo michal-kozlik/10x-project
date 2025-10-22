@@ -1,7 +1,13 @@
 import toast from "react-hot-toast";
 
 interface ToastOptions {
-  position?: "top-right" | "top-center" | "top-left" | "bottom-right" | "bottom-center" | "bottom-left";
+  position?:
+    | "top-right"
+    | "top-center"
+    | "top-left"
+    | "bottom-right"
+    | "bottom-center"
+    | "bottom-left";
   duration?: number;
 }
 

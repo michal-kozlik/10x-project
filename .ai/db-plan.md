@@ -3,44 +3,50 @@
 ## Tabele
 
 ### users
+
 Tabela zarządzana przez Supabase Auth.
 
-| Kolumna         | Typ          | Ograniczenia                    |
-|----------------|--------------|--------------------------------|
-| id             | bigserial    | PRIMARY KEY                    |
-| email          | varchar(255) | NOT NULL, UNIQUE               |
-| created_at     | timestamptz  | NOT NULL, DEFAULT now()        |
-| confirmed_at   | timestamptz  | NULL                          |
+| Kolumna      | Typ          | Ograniczenia            |
+| ------------ | ------------ | ----------------------- |
+| id           | bigserial    | PRIMARY KEY             |
+| email        | varchar(255) | NOT NULL, UNIQUE        |
+| created_at   | timestamptz  | NOT NULL, DEFAULT now() |
+| confirmed_at | timestamptz  | NULL                    |
 
 ### diagrams
+
 Tabela przechowująca diagramy sudoku użytkowników.
 
-| Kolumna       | Typ          | Ograniczenia                                        |
-|--------------|--------------|---------------------------------------------------|
-| id           | bigserial    | PRIMARY KEY                                       |
-| definition   | varchar(100) | NOT NULL                                          |
-| solution     | varchar(100) | NULL                                              |
-| name         | varchar(1000)| NULL                                              |
-| created_at   | timestamptz  | NOT NULL, DEFAULT now()                          |
-| user_id      | bigserial    | NOT NULL, REFERENCES users(id) ON DELETE CASCADE  |
+| Kolumna    | Typ           | Ograniczenia                                     |
+| ---------- | ------------- | ------------------------------------------------ |
+| id         | bigserial     | PRIMARY KEY                                      |
+| definition | varchar(100)  | NOT NULL                                         |
+| solution   | varchar(100)  | NULL                                             |
+| name       | varchar(1000) | NULL                                             |
+| created_at | timestamptz   | NOT NULL, DEFAULT now()                          |
+| user_id    | bigserial     | NOT NULL, REFERENCES users(id) ON DELETE CASCADE |
 
 ## Klucze
 
 ### Klucze podstawowe
+
 - `PK_users` na tabeli `users(id)`
 - `PK_diagrams` na tabeli `diagrams(id)`
 
 ### Klucze obce
+
 - `FK_diagrams_user` na tabeli `diagrams(user_id)` odnoszący się do `users(id)`
 
 ## Indeksy
 
 ### diagrams
+
 - `IX_diagrams_user_id` na kolumnie `user_id` - optymalizacja zapytań filtrujących po użytkowniku
 
 ## Row Level Security (RLS)
 
 ### diagrams
+
 ```sql
 -- Włączenie RLS dla tabeli diagrams
 ALTER TABLE diagrams ENABLE ROW LEVEL SECURITY;

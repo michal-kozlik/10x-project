@@ -20,7 +20,11 @@ interface DeleteDiagramDialogProps {
   disabled?: boolean;
 }
 
-export function DeleteDiagramDialog({ diagram, onConfirm, disabled }: DeleteDiagramDialogProps) {
+export function DeleteDiagramDialog({
+  diagram,
+  onConfirm,
+  disabled,
+}: DeleteDiagramDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -45,7 +49,7 @@ export function DeleteDiagramDialog({ diagram, onConfirm, disabled }: DeleteDiag
         setIsOpen(false);
       }
     },
-    [disabled, isOpen]
+    [disabled, isOpen],
   );
 
   return (
@@ -67,7 +71,8 @@ export function DeleteDiagramDialog({ diagram, onConfirm, disabled }: DeleteDiag
         <AlertDialogHeader>
           <AlertDialogTitle>Delete diagram</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete "{diagram.name}"? This action cannot be undone.
+            Are you sure you want to delete "{diagram.name}"? This action cannot
+            be undone.
             {isDeleting && (
               <span className="block mt-2 text-muted-foreground" role="status">
                 Deleting...

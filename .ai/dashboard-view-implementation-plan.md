@@ -1,12 +1,15 @@
 # Plan implementacji widoku Dashboard
 
 ## 1. Przegląd
+
 Widok Dashboard to główny interfejs aplikacji do zarządzania diagramami Sudoku. Składa się z dwóch głównych paneli: listy istniejących diagramów oraz edytora do tworzenia, modyfikowania i rozwiązywania diagramów. Widok ten zapewnia pełen cykl życia pracy z diagramem, od jego stworzenia, przez walidację, zapis, aż po uzyskanie rozwiązania.
 
 ## 2. Routing widoku
+
 Widok będzie dostępny pod ścieżką `/app`. Dostęp do tej ścieżki będzie chroniony i będzie wymagał aktywnej sesji użytkownika. Niezalogowani użytkownicy zostaną automatycznie przekierowani na stronę logowania (`/login`).
 
 ## 3. Struktura komponentów
+
 Hierarchia komponentów dla widoku Dashboard zostanie zorganizowana w następujący sposób, aby zapewnić reużywalność i separację odpowiedzialności:
 
 ```
@@ -32,6 +35,7 @@ Hierarchia komponentów dla widoku Dashboard zostanie zorganizowana w następuj�
 ## 4. Szczegóły komponentów
 
 ### `SessionGuard.tsx`
+
 - **Opis:** Komponent wyższego rzędu (HOC) lub wrapper, który sprawdza, czy użytkownik ma aktywną sesję. Jeśli nie, przekierowuje na stronę logowania.
 - **Główne elementy:** Renderuje `children`, jeśli sesja jest aktywna, w przeciwnym razie zarządza przekierowaniem.
 - **Obsługiwane interakcje:** Brak bezpośrednich interakcji użytkownika.
@@ -40,6 +44,7 @@ Hierarchia komponentów dla widoku Dashboard zostanie zorganizowana w następuj�
 - **Propsy:** `children: React.ReactNode`
 
 ### `DiagramsTable.tsx`
+
 - **Opis:** Główny komponent do wyświetlania listy diagramów. Integruje filtrowanie, sortowanie i paginację.
 - **Główne elementy:** `<table>` z `<thead>` i `<tbody>`. Wykorzystuje `SortableHeader` dla nagłówków i renderuje wiersze z danymi diagramów.
 - **Obsługiwane interakcje:** Kliknięcie wiersza w celu załadowania diagramu do edytora.
@@ -48,6 +53,7 @@ Hierarchia komponentów dla widoku Dashboard zostanie zorganizowana w następuj�
 - **Propsy:** `diagrams: Diagram[]`, `pagination: Pagination`, `onSelect: (diagram: Diagram) => void`, `onSort: (sortBy: string) => void`, `onPageChange: (page: number) => void`
 
 ### `SudokuEditor.tsx`
+
 - **Opis:** Kontener dla edytora Sudoku, zarządzający stanem edytowanego diagramu, walidacją i akcjami.
 - **Główne elementy:** `SudokuTextarea`, `ValidationHints`, `PrimaryActions`.
 - **Obsługiwane interakcje:** Wprowadzanie danych, zapisywanie, rozwiązywanie.
@@ -56,6 +62,7 @@ Hierarchia komponentów dla widoku Dashboard zostanie zorganizowana w następuj�
 - **Propsy:** `diagram: Diagram | null`, `onSave: (data: { name: string; definition: string }) => void`, `onSolve: (id: number) => void`
 
 ### `SudokuTextarea.tsx`
+
 - **Opis:** Pole tekstowe (`<textarea>`) z czcionką monospace, zintegrowane z logiką walidacji w locie.
 - **Główne elementy:** `<textarea>`, liczniki wierszy/kolumn.
 - **Obsługiwane interakcje:** Wprowadzanie i modyfikacja tekstu definicji Sudoku.
@@ -108,6 +115,7 @@ Hierarchia komponentów dla widoku Dashboard zostanie zorganizowana w następuj�
   ```
 
 ## 6. Zarządzanie stanem
+
 Zarządzanie stanem zostanie podzielone na dwa główne obszary, obsługiwane przez dedykowane custom hooki:
 
 - **`useDiagrams`**: Hook odpowiedzialny za stan listy diagramów. Będzie zarządzał `TableState` (paginacja, sortowanie, filtrowanie), stanem ładowania (`isLoading`) i błędami (`error`). Będzie zawierał funkcję do pobierania danych z API (`GET /api/diagrams`) i aktualizowania stanu.
@@ -145,6 +153,7 @@ Zarządzanie stanem zostanie podzielone na dwa główne obszary, obsługiwane pr
   - **Użycie:** Wywoływane po potwierdzeniu w dialogu usunięcia.
 
 ## 8. Interakcje użytkownika
+
 - **Wybór diagramu z listy:** Kliknięcie wiersza w `DiagramsTable` powoduje załadowanie danych diagramu do `SudokuEditor`. Jeśli edytor jest w stanie `isDirty`, wyświetlany jest dialog z prośbą o potwierdzenie.
 - **Edycja w `textarea`:** Każda zmiana w `SudokuTextarea` aktualizuje stan, ustawia `isDirty` na `true` i uruchamia walidację w locie.
 - **Kliknięcie "Zapisz":** Jeśli diagram jest poprawny, wysyłane jest żądanie `POST` lub `PUT` do API. Po pomyślnym zapisie lista diagramów jest odświeżana.
@@ -152,18 +161,21 @@ Zarządzanie stanem zostanie podzielone na dwa główne obszary, obsługiwane pr
 - **Filtrowanie/Sortowanie/Paginacja:** Interakcje z `FilterBar`, `SortableHeader` lub `Pagination` wywołują ponowne pobranie danych z API z odpowiednimi parametrami.
 
 ## 9. Warunki i walidacja
+
 - **Ochrona akcji (Save/Solve/Delete):** Wszystkie akcje modyfikujące dane wymagają aktywnej sesji użytkownika.
 - **Walidacja `SudokuTextarea`:** Komponent `SudokuTextarea` na bieżąco waliduje wprowadzane dane. Przycisk "Zapisz" jest nieaktywny, jeśli definicja jest nieprawidłowa.
 - **Limit 100 diagramów:** Przycisk "Zapisz" (dla nowego diagramu) jest dezaktywowany, gdy liczba diagramów użytkownika osiągnie 100. Informacja o limicie jest wyświetlana.
 - **"Dirty State Guard":** Hook `useSudokuEditor` będzie monitorował stan `isDirty`. Przy próbie nawigacji (np. zmiana diagramu, zamknięcie karty) z niezapisanymi zmianami, użytkownik zobaczy systemowe okno dialogowe z prośbą o potwierdzenie.
 
 ## 10. Obsługa błędów
+
 - **Błędy API (np. 500, 404):** Błędy serwera będą przechwytywane, a użytkownik zostanie poinformowany za pomocą globalnych komponentów typu "toast" (np. z biblioteki `react-hot-toast`).
 - **Błędy walidacji (klient):** Błędy wykryte w `SudokuTextarea` będą wyświetlane w komponencie `ValidationHints` bezpośrednio pod polem tekstowym, np. "W wierszu 4 powtarza się cyfra 9".
 - **Brak rozwiązania:** Jeśli API zwróci błąd informujący o braku rozwiązania dla danego Sudoku, odpowiedni komunikat zostanie wyświetlony w toaście.
 - **Brak sesji:** `SessionGuard` obsłuży ten przypadek, przekierowując użytkownika.
 
 ## 11. Kroki implementacji
+
 1.  **Utworzenie struktury plików:** Stworzenie plików dla wszystkich zdefiniowanych komponentów (`.tsx`) i strony (`.astro`) w odpowiednich katalogach (`/src/components`, `/src/pages`).
 2.  **Implementacja `SessionGuard`:** Zaimplementowanie logiki sprawdzania sesji i przekierowania.
 3.  **Stworzenie layoutu strony:** W pliku `/src/pages/app.astro` zintegrowanie `SessionGuard` i stworzenie dwukolumnowego układu dla listy i edytora.

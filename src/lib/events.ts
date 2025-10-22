@@ -14,17 +14,20 @@ export interface EventTypes {
   [Events.SUDOKU_VALIDATION]: string[];
 }
 
-export function dispatchGlobalEvent<K extends keyof EventTypes>(event: K, detail: EventTypes[K]): void {
+export function dispatchGlobalEvent<K extends keyof EventTypes>(
+  event: K,
+  detail: EventTypes[K],
+): void {
   window.dispatchEvent(
     new CustomEvent(event, {
       detail,
-    })
+    }),
   );
 }
 
 export function addGlobalEventListener<K extends keyof EventTypes>(
   event: K,
-  listener: (detail: EventTypes[K]) => void
+  listener: (detail: EventTypes[K]) => void,
 ): () => void {
   const eventListener = ((e: CustomEvent<EventTypes[K]>) => {
     listener(e.detail);

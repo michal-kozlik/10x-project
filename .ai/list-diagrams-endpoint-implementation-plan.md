@@ -21,12 +21,14 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
 ## 3. Wykorzystywane typy
 
 ### DTOs (już zdefiniowane w `src/types.ts`):
+
 - `ListDiagramsQuery` - parametry zapytania
 - `ListDiagramsResponseDTO` - struktura odpowiedzi
 - `DiagramListItemDTO` - pojedynczy element listy
 - `PaginationMetaDTO` - metadane paginacji
 
 ### Nowe typy do utworzenia:
+
 - `DiagramService` - serwis do operacji na diagramach
 - `DiagramRepository` - repozytorium do dostępu do bazy danych
 - `QueryValidationResult` - wynik walidacji parametrów
@@ -34,6 +36,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
 ## 4. Szczegóły odpowiedzi
 
 ### Sukces (200 OK):
+
 ```json
 {
   "data": [
@@ -55,6 +58,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
 ```
 
 ### Błędy:
+
 - **400 Bad Request:** Nieprawidłowe parametry zapytania
 - **401 Unauthorized:** Brak lub nieprawidłowy token autoryzacji
 - **500 Internal Server Error:** Błąd serwera lub bazy danych
@@ -83,16 +87,19 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
 ## 6. Względy bezpieczeństwa
 
 ### Uwierzytelnianie:
+
 - Wymagany token JWT z Supabase Auth
 - Weryfikacja tokenu na każdym żądaniu
 - Automatyczne pobieranie user_id z tokenu
 
 ### Autoryzacja:
+
 - Row Level Security (RLS) w Supabase
 - Użytkownicy mogą widzieć tylko swoje diagramy
 - Automatyczne filtrowanie po user_id
 
 ### Walidacja danych:
+
 - Sanityzacja parametrów zapytania
 - Walidacja zakresów wartości (page > 0, limit <= 100)
 - Ochrona przed SQL injection przez parametryzowane zapytania
@@ -118,6 +125,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
    - Nieoczekiwany błąd serwera
 
 ### Logowanie błędów:
+
 - Logowanie wszystkich błędów 500 z pełnym stack trace
 - Logowanie prób nieautoryzowanego dostępu
 - Monitoring wydajności zapytań
@@ -125,15 +133,18 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
 ## 8. Rozważania dotyczące wydajności
 
 ### Optymalizacje bazy danych:
+
 - Istniejący indeks na `user_id` dla szybkich wyszukiwań
 - Paginacja ogranicza rozmiar wyników
 - Efektywne zapytania z LIMIT i OFFSET
 
 ### Caching:
+
 - Rozważenie cache'owania dla często używanych zapytań
 - Cache metadanych paginacji dla dużych zbiorów danych
 
 ### Limity:
+
 - Maksymalny limit 100 elementów na stronę
 - Timeout dla długotrwałych zapytań wynosi 60 sekund
 - Rate limiting dla zapobiegania nadużyciom
@@ -141,6 +152,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
 ## 9. Etapy wdrożenia
 
 ### Etap 1: Przygotowanie infrastruktury
+
 1. Dodanie pakietów NuGet:
    - `Supabase` - klient Supabase dla .NET
    - `Microsoft.AspNetCore.Authentication.JwtBearer` - obsługa JWT
@@ -152,6 +164,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
    - Konfiguracja Supabase
 
 ### Etap 2: Implementacja warstwy danych
+
 1. Utworzenie `DiagramRepository`:
    - Metody do pobierania diagramów z filtrami
    - Implementacja paginacji
@@ -163,6 +176,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
    - Mapowanie na DTOs
 
 ### Etap 3: Implementacja kontrolera
+
 1. Utworzenie `DiagramsController`:
    - Endpoint GET `/diagrams`
    - Walidacja parametrów
@@ -174,6 +188,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
    - Obsługa błędów globalnych
 
 ### Etap 4: Testy i walidacja
+
 1. Testy jednostkowe:
    - Testy serwisu
    - Testy repozytorium
@@ -185,6 +200,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
    - Testy wydajności
 
 ### Etap 5: Dokumentacja i wdrożenie
+
 1. Dokumentacja API:
    - OpenAPI/Swagger
    - Przykłady użycia
@@ -196,6 +212,7 @@ Endpoint `GET /diagrams` służy do pobierania listy diagramów sudoku użytkown
    - Backup i recovery
 
 ### Etap 6: Optymalizacja
+
 1. Analiza wydajności:
    - Profiling zapytań
    - Optymalizacja indeksów

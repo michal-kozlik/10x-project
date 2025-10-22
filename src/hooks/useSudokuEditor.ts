@@ -1,6 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import type { DiagramDTO } from "../types";
-import { Events, addGlobalEventListener, dispatchGlobalEvent } from "../lib/events";
+import {
+  Events,
+  addGlobalEventListener,
+  dispatchGlobalEvent,
+} from "../lib/events";
 import { showToast } from "../lib/toast";
 
 type SetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -21,7 +25,9 @@ export function useSudokuEditor() {
   useEffect(() => {
     const handleDiagramSelect = (diagram: DiagramDTO) => {
       if (editorState.isDirty) {
-        const shouldDiscard = window.confirm("You have unsaved changes. Do you want to discard them?");
+        const shouldDiscard = window.confirm(
+          "You have unsaved changes. Do you want to discard them?",
+        );
         if (!shouldDiscard) {
           return;
         }
@@ -48,11 +54,12 @@ export function useSudokuEditor() {
         setEditorState((prev) => ({
           ...prev,
           isDirty:
-            definition !== prev.diagram?.definition || (name !== prev.diagram?.name && prev.diagram.name !== null),
+            definition !== prev.diagram?.definition ||
+            (name !== prev.diagram?.name && prev.diagram.name !== null),
         }));
       }
     },
-    [editorState.diagram]
+    [editorState.diagram],
   );
 
   const onSave = useCallback(
@@ -63,7 +70,9 @@ export function useSudokuEditor() {
 
       const loadingToastId = showToast.loading("Saving diagram...");
       try {
-        const url = editorState.diagram ? `/api/diagrams/${editorState.diagram.id}` : "/api/diagrams";
+        const url = editorState.diagram
+          ? `/api/diagrams/${editorState.diagram.id}`
+          : "/api/diagrams";
         const method = editorState.diagram ? "PUT" : "POST";
 
         const response = await fetch(url, {
@@ -92,11 +101,13 @@ export function useSudokuEditor() {
         showToast.success("Diagram saved successfully!");
       } catch (error) {
         showToast.dismiss(loadingToastId);
-        showToast.error(error instanceof Error ? error.message : "Failed to save diagram");
+        showToast.error(
+          error instanceof Error ? error.message : "Failed to save diagram",
+        );
         throw error;
       }
     },
-    [editorState.diagram, editorState.validationErrors]
+    [editorState.diagram, editorState.validationErrors],
   );
 
   const onSolve = useCallback(async () => {
@@ -106,7 +117,10 @@ export function useSudokuEditor() {
 
     const loadingToastId = showToast.loading("Solving diagram...");
     try {
-      const response = await fetch(`/api/diagrams/${editorState.diagram.id}/solve`, { method: "POST" });
+      const response = await fetch(
+        `/api/diagrams/${editorState.diagram.id}/solve`,
+        { method: "POST" },
+      );
 
       if (!response.ok) {
         throw new Error("Failed to solve diagram");
@@ -122,7 +136,9 @@ export function useSudokuEditor() {
     } catch (error) {
       console.error("Error solving diagram:", error);
       showToast.dismiss(loadingToastId);
-      showToast.error(error instanceof Error ? error.message : "Failed to solve diagram");
+      showToast.error(
+        error instanceof Error ? error.message : "Failed to solve diagram",
+      );
       throw error;
     }
   }, [editorState.diagram]);

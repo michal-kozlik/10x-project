@@ -64,14 +64,23 @@ export function SudokuEditor({
           <label htmlFor="name" className="text-sm font-medium">
             Name
           </label>
-          <Input id="name" value={name} onChange={handleNameChange} placeholder="Enter diagram name" />
+          <Input
+            id="name"
+            value={name}
+            onChange={handleNameChange}
+            placeholder="Enter diagram name"
+          />
         </div>
 
         <div className="space-y-2">
           <label htmlFor="definition" className="text-sm font-medium">
             Definition
           </label>
-          <SudokuTextarea id="definition" value={definition} onChange={handleDefinitionChange} />
+          <SudokuTextarea
+            id="definition"
+            value={definition}
+            onChange={handleDefinitionChange}
+          />
           <ValidationHints errors={validationErrors} />
         </div>
 

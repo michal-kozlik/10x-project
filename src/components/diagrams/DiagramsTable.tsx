@@ -13,7 +13,14 @@ interface DiagramsTableProps {
   sortBy: string;
 }
 
-export function DiagramsTable({ diagrams, isLoading, onSort, onSelect, onDelete, sortBy }: DiagramsTableProps) {
+export function DiagramsTable({
+  diagrams,
+  isLoading,
+  onSort,
+  onSelect,
+  onDelete,
+  sortBy,
+}: DiagramsTableProps) {
   const [deletingIds, setDeletingIds] = useState<number[]>([]);
 
   const handleDelete = async (id: number) => {
@@ -46,11 +53,36 @@ export function DiagramsTable({ diagrams, isLoading, onSort, onSelect, onDelete,
       <table className="w-full">
         <thead>
           <tr className="border-b">
-            <SortableHeader label="Nazwa" sortKey="name" currentSort={sortBy} onClick={onSort} />
-            <SortableHeader label="Utworzono" sortKey="created_at" currentSort={sortBy} onClick={onSort} />
-            <SortableHeader label="Zaktualiz." sortKey="updated_at" currentSort={sortBy} onClick={onSort} />
-            <SortableHeader label="Definicja" sortKey="definition" currentSort={sortBy} onClick={onSort} />
-            <SortableHeader label="Status" sortKey="solution" currentSort={sortBy} onClick={onSort} />
+            <SortableHeader
+              label="Nazwa"
+              sortKey="name"
+              currentSort={sortBy}
+              onClick={onSort}
+            />
+            <SortableHeader
+              label="Utworzono"
+              sortKey="created_at"
+              currentSort={sortBy}
+              onClick={onSort}
+            />
+            <SortableHeader
+              label="Zaktualiz."
+              sortKey="updated_at"
+              currentSort={sortBy}
+              onClick={onSort}
+            />
+            <SortableHeader
+              label="Definicja"
+              sortKey="definition"
+              currentSort={sortBy}
+              onClick={onSort}
+            />
+            <SortableHeader
+              label="Status"
+              sortKey="solution"
+              currentSort={sortBy}
+              onClick={onSort}
+            />
             <th className="w-10" />
           </tr>
         </thead>
@@ -60,15 +92,21 @@ export function DiagramsTable({ diagrams, isLoading, onSort, onSelect, onDelete,
               key={diagram.id}
               onClick={() => onSelect(diagram)}
               className={`border-b ${
-                deletingIds.includes(diagram.id) ? "opacity-50 pointer-events-none" : "hover:bg-muted/50 cursor-pointer"
+                deletingIds.includes(diagram.id)
+                  ? "opacity-50 pointer-events-none"
+                  : "hover:bg-muted/50 cursor-pointer"
               }`}
             >
               <td className="px-1 py-2">{diagram.name}</td>
               <td className="px-1 py-2">{formatDate(diagram.created_at)}</td>
               <td className="px-1 py-2">
-                {diagram.updated_at ? formatDate(diagram.updated_at) : formatDate(diagram.created_at)}
+                {diagram.updated_at
+                  ? formatDate(diagram.updated_at)
+                  : formatDate(diagram.created_at)}
               </td>
-              <td className="px-1 py-2 font-mono whitespace-pre">{diagram.definition}</td>
+              <td className="px-1 py-2 font-mono whitespace-pre">
+                {diagram.definition}
+              </td>
               <td className="px-1 py-2">
                 {diagram.solution ? (
                   <span title="Rozwiązane" className="text-green-500">

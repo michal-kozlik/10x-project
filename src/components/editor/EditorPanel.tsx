@@ -4,7 +4,15 @@ import { SolvedDiagramView } from "./SolvedDiagramView";
 import { useSudokuEditor } from "@/hooks/useSudokuEditor";
 
 export default function EditorPanel() {
-  const { diagram, isDirty, validationErrors, onSave, onSolve, onClear, updateContent } = useSudokuEditor();
+  const {
+    diagram,
+    isDirty,
+    validationErrors,
+    onSave,
+    onSolve,
+    onClear,
+    updateContent,
+  } = useSudokuEditor();
 
   const handleContentChange = (name: string, definition: string) => {
     updateContent(name, definition);

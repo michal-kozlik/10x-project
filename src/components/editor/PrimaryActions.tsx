@@ -9,7 +9,14 @@ interface PrimaryActionsProps {
   onClear: () => void;
 }
 
-export function PrimaryActions({ canSave, canSolve, isSaveEnabled, onSave, onSolve, onClear }: PrimaryActionsProps) {
+export function PrimaryActions({
+  canSave,
+  canSolve,
+  isSaveEnabled,
+  onSave,
+  onSolve,
+  onClear,
+}: PrimaryActionsProps) {
   return (
     <div className="flex justify-between gap-2">
       <div>

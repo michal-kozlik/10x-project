@@ -1,9 +1,11 @@
 ## API Endpoint Implementation Plan: Solve Diagram (`POST /diagrams/{id}/solve`)
 
 ### 1. Przegląd punktu końcowego
+
 Punkt końcowy generuje rozwiązanie dla istniejącego diagramu sudoku i zapisuje je w bazie danych. Użytkownik (uwierzytelniony) wywołuje operację solve dla konkretnego `diagram.id`. Usługa pobiera definicję diagramu, uruchamia solver, zapisuje `solution` i aktualizuje `updated_at`, a następnie zwraca pełny obiekt diagramu.
 
 ### 2. Szczegóły żądania
+
 - **Metoda HTTP**: POST
 - **URL**: `/diagrams/{id}/solve`
 - **Parametry**:
@@ -15,6 +17,7 @@ Punkt końcowy generuje rozwiązanie dla istniejącego diagramu sudoku i zapisuj
 - **Body**: brak (solver działa na istniejącej definicji)
 
 ### 3. Wykorzystywane typy
+
 - DTO (Response DTO):
   - `DiagramDto` (dla odpowiedzi 200):
     - `id: number`
@@ -34,6 +37,7 @@ Punkt końcowy generuje rozwiązanie dla istniejącego diagramu sudoku i zapisuj
 Uwagi: dopasować typy do istniejących modeli w `backend/Models` oraz kontraktów w `src/types.ts` (frontend). W razie rozbieżności dodać mapowanie domena → DTO.
 
 ### 4. Szczegóły odpowiedzi
+
 - **200 OK** — sukces; zwracany `DiagramDto`:
 
 ```json
@@ -55,6 +59,7 @@ Uwagi: dopasować typy do istniejących modeli w `backend/Models` oraz kontrakt�
   - `500 Internal Server Error` — błąd nieoczekiwany/solver/DB
 
 ### 5. Przepływ danych
+
 1. Klient wywołuje `POST /diagrams/{id}/solve` z JWT (Supabase Auth).
 2. Middleware auth weryfikuje token i ustala `userId`.
 3. Handler pobiera `id` z trasy, waliduje.
@@ -71,6 +76,7 @@ Uwagi: dopasować typy do istniejących modeli w `backend/Models` oraz kontrakt�
 Źródła danych: Postgres (Supabase). Warstwa repo: `SupabaseDiagramRepository` (produkcyjnie) i `InMemoryDiagramRepository` (testy/dev).
 
 ### 6. Względy bezpieczeństwa
+
 - **Uwierzytelnianie**: Wymagane JWT Supabase (middleware). Brak dostępu anonimowego.
 - **Autoryzacja zasobowa**: Filtr po `userId` — użytkownik może rozwiązywać tylko swoje diagramy.
 - **Walidacja danych**: Guard clauses dla `id`, stanu diagramu, długości pól. Odporność na injection (parametry bindowane, brak raw SQL).
@@ -80,6 +86,7 @@ Uwagi: dopasować typy do istniejących modeli w `backend/Models` oraz kontrakt�
 - **Nagłówki**: `Cache-Control: no-store` (wynik jest per-resource i zmienny), `Content-Type: application/json; charset=utf-8`.
 
 ### 7. Obsługa błędów
+
 - Walidacja wejścia: `400` z payloadem błędu `{ code, message, details? }`.
 - Brak zasobu / brak dostępu: `404` (unikamy ujawniania istnienia zasobu innego użytkownika).
 - Niepowodzenie solvera (niespełnialna definicja): `400` (business validation) z kodem `UNSOLVABLE`.
@@ -98,12 +105,14 @@ Standardowy kształt błędu:
 ```
 
 ### 8. Rozważania dotyczące wydajności
+
 - Solver uruchamiać synchronicznie.
 - Unikać wielokrotnych odczytów — repozytorium powinno pobierać i aktualizować w jednej transakcji.
 - Indeks na `diagrams(id)` istnieje (PK). Dodatkowe indeksy nie wymagane dla tego endpointu.
 - Rate limiting, ewentualnie quota per user.
 
 ### 9. Etapy wdrożenia
+
 1. Dodaj kontrakty DTO/Command w backend:
    - `SolveDiagramCommand` (aplikacja/serwis)
    - `DiagramDto` (API)
@@ -133,4 +142,5 @@ Standardowy kształt błędu:
 9. Dokumentacja:
    - Uzupełnij Swagger/OpenAPI (opis, kody, schematy DTO), przykład odpowiedzi.
 10. Telemetria i logowanie:
-   - Dodaj logi `Information` (start/stop solve), `Warning` (unsolvable), `Error` (wyjątki) z `userId`, `diagramId`.
+
+- Dodaj logi `Information` (start/stop solve), `Warning` (unsolvable), `Error` (wyjątki) z `userId`, `diagramId`.

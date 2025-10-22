@@ -1,6 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
-import type { DiagramDTO, ListDiagramsQuery, ListDiagramsResponseDTO } from "../types";
-import { Events, dispatchGlobalEvent, addGlobalEventListener } from "../lib/events";
+import type {
+  DiagramDTO,
+  ListDiagramsQuery,
+  ListDiagramsResponseDTO,
+} from "../types";
+import {
+  Events,
+  dispatchGlobalEvent,
+  addGlobalEventListener,
+} from "../lib/events";
 import { showToast } from "../lib/toast";
 
 interface TableState {
@@ -12,7 +20,11 @@ interface TableState {
 
 export function useDiagrams() {
   const [diagrams, setDiagrams] = useState<DiagramDTO[]>([]);
-  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+  });
   const [tableState, setTableState] = useState<TableState>({
     page: 1,
     limit: 10,
@@ -27,7 +39,9 @@ export function useDiagrams() {
     setError(null);
 
     try {
-      const response = await fetch(`/api/diagrams?${new URLSearchParams(query as Record<string, string>)}`);
+      const response = await fetch(
+        `/api/diagrams?${new URLSearchParams(query as Record<string, string>)}`,
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch diagrams");
@@ -90,13 +104,14 @@ export function useDiagrams() {
         // If this was the selected diagram, clear the selection
         dispatchGlobalEvent(Events.DIAGRAM_SELECT, null);
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to delete diagram";
+        const message =
+          err instanceof Error ? err.message : "Failed to delete diagram";
         setError(message);
         showToast.error(message);
         throw err;
       }
     },
-    [fetchDiagrams, tableState]
+    [fetchDiagrams, tableState],
   );
 
   return {
