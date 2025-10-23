@@ -1,0 +1,16 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import LoginForm from "@/components/auth/LoginForm";
+
+const next = Astro.url.searchParams.get("next");
+---
+
+<AuthLayout
+  title="Witaj ponownie"
+  subtitle={next ? `Po zalogowaniu wrócisz do ${next}` : undefined}
+>
+  <LoginForm 
+    nextPath={next}
+    client:load
+  />
+</AuthLayout>
