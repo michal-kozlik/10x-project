@@ -34,6 +34,12 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
 
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const handleLoginClick = () => {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+  };
+
   const submitHandler = handleSubmit(async (values) => {
     setServerError(null);
     try {
@@ -145,7 +151,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
           <button
             type="button"
             className="font-semibold text-primary underline-offset-4 hover:underline"
-            onClick={onLoginClick}
+            onClick={onLoginClick ?? handleLoginClick}
           >
             Zaloguj się
           </button>

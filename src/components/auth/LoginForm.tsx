@@ -18,6 +18,8 @@ interface LoginFormProps {
   onSubmit?: (values: LoginFormValues) => Promise<void>;
   onForgotPasswordClick?: () => void;
   onRegisterClick?: () => void;
+  redirectToRegister?: boolean;
+  redirectToReset?: boolean;
 }
 
 export function LoginForm({
@@ -40,6 +42,18 @@ export function LoginForm({
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const handleForgotPassword = () => {
+    if (typeof window !== "undefined") {
+      window.location.href = "/reset-password";
+    }
+  };
+
+  const handleRegister = () => {
+    if (typeof window !== "undefined") {
+      window.location.href = "/register";
+    }
+  };
 
   const submitHandler = handleSubmit(async (values) => {
     setServerError(null);
@@ -122,7 +136,7 @@ export function LoginForm({
             <button
               type="button"
               className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-              onClick={onForgotPasswordClick}
+              onClick={onForgotPasswordClick ?? handleForgotPassword}
             >
               Zapomniałeś hasła?
             </button>
@@ -150,7 +164,7 @@ export function LoginForm({
           <button
             type="button"
             className="ml-1 font-semibold text-primary underline-offset-4 hover:underline"
-            onClick={onRegisterClick}
+            onClick={onRegisterClick ?? handleRegister}
           >
             Załóż konto
           </button>

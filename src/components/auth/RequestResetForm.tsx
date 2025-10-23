@@ -30,6 +30,12 @@ export function RequestResetForm({
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const handleLoginClick = () => {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+  };
   const [isSuccess, setIsSuccess] = useState(false);
 
   const submitHandler = handleSubmit(async (values) => {
@@ -65,7 +71,7 @@ export function RequestResetForm({
             <button
               type="button"
               className="font-semibold text-primary underline-offset-4 hover:underline"
-              onClick={onLoginClick}
+              onClick={onLoginClick ?? handleLoginClick}
             >
               wrócić do logowania
             </button>
@@ -120,7 +126,7 @@ export function RequestResetForm({
           <button
             type="button"
             className="font-semibold text-primary underline-offset-4 hover:underline"
-            onClick={onLoginClick}
+            onClick={onLoginClick ?? handleLoginClick}
           >
             Wróć do logowania
           </button>
