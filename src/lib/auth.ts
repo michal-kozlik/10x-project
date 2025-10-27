@@ -54,19 +54,26 @@ export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type RequestResetValues = z.infer<typeof requestResetSchema>;
 export type SetNewPasswordValues = z.infer<typeof setNewPasswordSchema>;
 
-export type AuthErrorCode = "auth/invalid-login-credentials" | "auth/user-not-confirmed" | "auth/network-request-failed" | "auth/too-many-requests" | "auth/unknown";
+export type AuthErrorCode =
+  | "auth/invalid-login-credentials"
+  | "auth/user-not-confirmed"
+  | "auth/network-request-failed"
+  | "auth/too-many-requests"
+  | "auth/unknown";
 
 const ERROR_MESSAGES: Record<AuthErrorCode, string> = {
   "auth/invalid-login-credentials": "Nieprawidłowy e-mail lub hasło.",
   "auth/user-not-confirmed": "Potwierdź swój adres e-mail, aby kontynuować.",
   "auth/network-request-failed": "Wystąpił błąd połączenia. Spróbuj ponownie.",
   "auth/too-many-requests": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
-  "auth/unknown": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie."
+  "auth/unknown": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
 };
 
 export function getAuthErrorMessage(code: string | null): string {
   if (!code) return ERROR_MESSAGES["auth/unknown"];
-  return ERROR_MESSAGES[code as AuthErrorCode] ?? ERROR_MESSAGES["auth/unknown"];
+  return (
+    ERROR_MESSAGES[code as AuthErrorCode] ?? ERROR_MESSAGES["auth/unknown"]
+  );
 }
 
 import { supabaseClient } from "../db/supabase.client";
@@ -76,7 +83,7 @@ interface SupabaseAuthError extends Error {
 }
 
 function isSupabaseError(error: unknown): error is SupabaseAuthError {
-  return error instanceof Error && 'code' in error;
+  return error instanceof Error && "code" in error;
 }
 
 /**
@@ -92,10 +99,12 @@ export async function loginWithPassword(
   });
 
   if (error) {
-    const code = 
-      error.status === 429 ? 'auth/too-many-requests' :
-      error.status === 400 ? 'auth/invalid-login-credentials' :
-      'auth/unknown';
+    const code =
+      error.status === 429
+        ? "auth/too-many-requests"
+        : error.status === 400
+          ? "auth/invalid-login-credentials"
+          : "auth/unknown";
     throw new Error(getAuthErrorMessage(code));
   }
 }
@@ -108,7 +117,7 @@ export async function logout(): Promise<void> {
     const { error } = await supabaseClient.auth.signOut();
     if (error) throw error;
   } catch (error) {
-    throw new Error(getAuthErrorMessage('auth/network-request-failed'));
+    throw new Error(getAuthErrorMessage("auth/network-request-failed"));
   }
 }
 
@@ -117,14 +126,19 @@ export async function logout(): Promise<void> {
  */
 export async function getSession() {
   try {
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
     if (error) {
       throw Object.assign(new Error(error.message), {
-        code: 'auth/network-request-failed'
+        code: "auth/network-request-failed",
       } as SupabaseAuthError);
     }
     return session;
   } catch (error) {
-    throw new Error(getAuthErrorMessage(isSupabaseError(error) ? error.code : 'auth/unknown'));
+    throw new Error(
+      getAuthErrorMessage(isSupabaseError(error) ? error.code : "auth/unknown"),
+    );
   }
 }

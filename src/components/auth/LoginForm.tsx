@@ -7,18 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { showToast } from "@/lib/toast";
-import {
-  loginSchema,
-  type LoginFormValues,
-} from "@/lib/auth";
+import { loginSchema, type LoginFormValues } from "@/lib/auth";
 
 interface LoginFormProps {
   nextPath?: string | null;
 }
 
-export function LoginForm({
-  nextPath,
-}: LoginFormProps) {
+export function LoginForm({ nextPath }: LoginFormProps) {
   const {
     register,
     handleSubmit,
@@ -57,7 +52,8 @@ export function LoginForm({
       showToast.success("Zalogowano pomyślnie");
       window.location.href = nextPath ?? "/app";
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Nieznany błąd logowania";
+      const message =
+        error instanceof Error ? error.message : "Nieznany błąd logowania";
       setServerError(message);
       showToast.error(message);
     }
@@ -65,7 +61,7 @@ export function LoginForm({
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent form from submitting normally
-    
+
     const isValid = await trigger();
     if (!isValid) {
       showToast.error("Wypełnij wymagane pola");
