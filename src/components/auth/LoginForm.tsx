@@ -11,6 +11,7 @@ import {
   getAuthErrorMessage,
   loginSchema,
   type LoginFormValues,
+  loginWithPassword,
 } from "@/lib/auth";
 
 interface LoginFormProps {
@@ -31,6 +32,7 @@ export function LoginForm({
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -39,33 +41,36 @@ export function LoginForm({
       password: "",
       remember: true,
     },
+    mode: "onChange",
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const handleForgotPassword = () => {
+  // Navigation will be handled by form submission to ensure proper transitions in Astro
+
+  // Use a simple anchor element with enhanced onClick handling for navigation
+  const handleNavigation = (path: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
     if (typeof window !== "undefined") {
-      window.location.href = "/reset-password";
+      // Use standard href to ensure proper behavior with Astro View Transitions
+      window.location.href = path;
     }
   };
 
-  const handleRegister = () => {
-    if (typeof window !== "undefined") {
-      window.location.href = "/register";
-    }
-  };
+  const handleForgotPassword = handleNavigation("/reset-password");
+  const handleRegister = handleNavigation("/register");
 
-  const submitHandler = handleSubmit(async (values) => {
+  const onSubmitHandler = async (values: LoginFormValues) => {
     setServerError(null);
     try {
       if (onSubmit) {
         await onSubmit(values);
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        const destination = nextPath ?? "/app";
-        showToast.success(
-          `Zalogowano (demo). Przekierowanie do ${destination}`,
-        );
+        await loginWithPassword(values.email, values.password, values.remember);
+        showToast.success("Zalogowano pomyślnie");
+
+        // Use proper client-side navigation
+        handleNavigation(nextPath ?? "/app")();
       }
     } catch (error) {
       const code = (error as { code?: string | null })?.code;
@@ -74,7 +79,20 @@ export function LoginForm({
       setServerError(message);
       showToast.error(message);
     }
-  });
+  };
+
+  const submitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Najpierw wymuszamy walidację wszystkich pól
+    const isValid = await trigger();
+    if (!isValid) {
+      showToast.error("Wypełnij wymagane pola");
+      return;
+    }
+
+    // Jeśli walidacja przeszła, wywołujemy handleSubmit
+    handleSubmit(onSubmitHandler)(e);
+  };
 
   return (
     <Card data-testid="login-card">
@@ -87,7 +105,7 @@ export function LoginForm({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <form className="space-y-4" onSubmit={submitHandler} noValidate>
+        <form className="space-y-4" onSubmit={submitHandler}>
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="email">
               E-mail
@@ -97,6 +115,7 @@ export function LoginForm({
               type="email"
               placeholder="jan.kowalski@example.com"
               autoComplete="email"
+              required
               {...register("email")}
               aria-invalid={Boolean(errors.email)}
             />
@@ -114,6 +133,7 @@ export function LoginForm({
               type="password"
               placeholder="********"
               autoComplete="current-password"
+              required
               {...register("password")}
               aria-invalid={Boolean(errors.password)}
             />
@@ -133,13 +153,13 @@ export function LoginForm({
               />
               <span>Zapamiętaj mnie</span>
             </label>
-            <button
-              type="button"
+            <a
+              href="/reset-password"
               className="text-sm font-medium text-primary underline-offset-4 hover:underline"
               onClick={onForgotPasswordClick ?? handleForgotPassword}
             >
               Zapomniałeś hasła?
-            </button>
+            </a>
           </div>
 
           {serverError && (
@@ -161,13 +181,13 @@ export function LoginForm({
 
         <div className="text-center text-sm text-muted-foreground">
           Nie masz jeszcze konta?
-          <button
-            type="button"
+          <a
+            href="/register"
             className="ml-1 font-semibold text-primary underline-offset-4 hover:underline"
             onClick={onRegisterClick ?? handleRegister}
           >
             Załóż konto
-          </button>
+          </a>
         </div>
       </CardContent>
     </Card>

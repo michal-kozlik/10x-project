@@ -22,6 +22,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -30,6 +31,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
       password: "",
       acceptTerms: false,
     },
+    mode: "onChange",
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
     }
   };
 
-  const submitHandler = handleSubmit(async (values) => {
+  const onSubmitHandler = async (values: RegisterFormValues) => {
     setServerError(null);
     try {
       if (onSubmit) {
@@ -58,7 +60,20 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
       setServerError(message);
       showToast.error(message);
     }
-  });
+  };
+
+  const submitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Najpierw wymuszamy walidację wszystkich pól
+    const isValid = await trigger();
+    if (!isValid) {
+      showToast.error("Wypełnij wymagane pola");
+      return;
+    }
+
+    // Jeśli walidacja przeszła, wywołujemy handleSubmit
+    handleSubmit(onSubmitHandler)(e);
+  };
 
   return (
     <Card data-testid="register-card">
@@ -66,7 +81,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
         <CardTitle className="text-2xl">Załóż konto</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <form className="space-y-4" onSubmit={submitHandler} noValidate>
+        <form className="space-y-4" onSubmit={submitHandler}>
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="email">
               E-mail
@@ -76,6 +91,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
               type="email"
               placeholder="jan.kowalski@example.com"
               autoComplete="email"
+              required
               {...register("email")}
               aria-invalid={Boolean(errors.email)}
             />
@@ -93,6 +109,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
               type="password"
               placeholder="********"
               autoComplete="new-password"
+              required
               {...register("password")}
               aria-invalid={Boolean(errors.password)}
             />
@@ -108,6 +125,7 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
               <input
                 type="checkbox"
                 className="h-4 w-4 rounded border-input text-primary focus-visible:ring-2"
+                required
                 {...register("acceptTerms")}
               />
               <span className="text-sm">
@@ -148,13 +166,13 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
 
         <div className="text-center text-sm text-muted-foreground">
           Masz już konto?{" "}
-          <button
-            type="button"
+          <a
+            href="/login"
             className="font-semibold text-primary underline-offset-4 hover:underline"
             onClick={onLoginClick ?? handleLoginClick}
           >
             Zaloguj się
-          </button>
+          </a>
         </div>
       </CardContent>
     </Card>
