@@ -17,14 +17,16 @@ export function SetNewPasswordForm({ onSubmit }: SetNewPasswordFormProps) {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<SetNewPasswordValues>({
     resolver: zodResolver(setNewPasswordSchema),
+    mode: "onChange",
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const submitHandler = handleSubmit(async (values) => {
+  const onSubmitHandler = async (values: SetNewPasswordValues) => {
     setServerError(null);
     try {
       if (onSubmit) {
@@ -41,7 +43,20 @@ export function SetNewPasswordForm({ onSubmit }: SetNewPasswordFormProps) {
       setServerError(message);
       showToast.error(message);
     }
-  });
+  };
+
+  const submitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Najpierw wymuszamy walidację wszystkich pól
+    const isValid = await trigger();
+    if (!isValid) {
+      showToast.error("Wypełnij wymagane pola");
+      return;
+    }
+
+    // Jeśli walidacja przeszła, wywołujemy handleSubmit
+    handleSubmit(onSubmitHandler)(e);
+  };
 
   return (
     <Card data-testid="set-new-password-card">
@@ -49,7 +64,7 @@ export function SetNewPasswordForm({ onSubmit }: SetNewPasswordFormProps) {
         <CardTitle className="text-2xl">Ustaw nowe hasło</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <form className="space-y-4" onSubmit={submitHandler} noValidate>
+        <form className="space-y-4" onSubmit={submitHandler}>
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="password">
               Nowe hasło
@@ -59,6 +74,7 @@ export function SetNewPasswordForm({ onSubmit }: SetNewPasswordFormProps) {
               type="password"
               placeholder="********"
               autoComplete="new-password"
+              required
               {...register("password")}
               aria-invalid={Boolean(errors.password)}
             />
@@ -78,6 +94,7 @@ export function SetNewPasswordForm({ onSubmit }: SetNewPasswordFormProps) {
               type="password"
               placeholder="********"
               autoComplete="new-password"
+              required
               {...register("confirmPassword")}
               aria-invalid={Boolean(errors.confirmPassword)}
             />

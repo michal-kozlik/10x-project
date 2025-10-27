@@ -2,7 +2,14 @@
 import AuthLayout from "@/layouts/AuthLayout.astro";
 import LoginForm from "@/components/auth/LoginForm";
 
+// Get next page from query params
 const next = Astro.url.searchParams.get("next");
+
+// Check if user is already logged in
+const { session } = Astro.locals;
+if (session) {
+  return Astro.redirect(next ?? "/app");
+}
 ---
 
 <AuthLayout

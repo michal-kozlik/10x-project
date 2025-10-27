@@ -21,24 +21,27 @@ export function RequestResetForm({
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<RequestResetValues>({
     resolver: zodResolver(requestResetSchema),
     defaultValues: {
       email: "",
     },
+    mode: "onChange",
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const handleLoginClick = () => {
+  const handleLoginClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (typeof window !== "undefined") {
       window.location.href = "/login";
     }
   };
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const submitHandler = handleSubmit(async (values) => {
+  const onSubmitHandler = async (values: RequestResetValues) => {
     setServerError(null);
     try {
       if (onSubmit) {
@@ -53,7 +56,20 @@ export function RequestResetForm({
       setServerError(message);
       showToast.error(message);
     }
-  });
+  };
+
+  const submitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Najpierw wymuszamy walidację wszystkich pól
+    const isValid = await trigger();
+    if (!isValid) {
+      showToast.error("Wypełnij wymagane pola");
+      return;
+    }
+
+    // Jeśli walidacja przeszła, wywołujemy handleSubmit
+    handleSubmit(onSubmitHandler)(e);
+  };
 
   if (isSuccess) {
     return (
@@ -68,13 +84,13 @@ export function RequestResetForm({
           </p>
           <p className="text-sm text-muted-foreground">
             Możesz teraz zamknąć tę stronę lub{" "}
-            <button
-              type="button"
+            <a
+              href="/login"
               className="font-semibold text-primary underline-offset-4 hover:underline"
               onClick={onLoginClick ?? handleLoginClick}
             >
               wrócić do logowania
-            </button>
+            </a>
           </p>
         </CardContent>
       </Card>
@@ -87,7 +103,7 @@ export function RequestResetForm({
         <CardTitle className="text-2xl">Resetowanie hasła</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <form className="space-y-4" onSubmit={submitHandler} noValidate>
+        <form className="space-y-4" onSubmit={submitHandler}>
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="email">
               E-mail
@@ -97,6 +113,7 @@ export function RequestResetForm({
               type="email"
               placeholder="jan.kowalski@example.com"
               autoComplete="email"
+              required
               {...register("email")}
               aria-invalid={Boolean(errors.email)}
             />
@@ -123,13 +140,13 @@ export function RequestResetForm({
         </form>
 
         <div className="text-center text-sm text-muted-foreground">
-          <button
-            type="button"
+          <a
+            href="/login"
             className="font-semibold text-primary underline-offset-4 hover:underline"
             onClick={onLoginClick ?? handleLoginClick}
           >
             Wróć do logowania
-          </button>
+          </a>
         </div>
       </CardContent>
     </Card>

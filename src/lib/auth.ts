@@ -104,3 +104,54 @@ export function mapAuthError(code?: string | null): AuthErrorCode {
 export function getAuthErrorMessage(code?: string | null) {
   return ERROR_MESSAGES[mapAuthError(code)];
 }
+
+import { supabaseClient } from "../db/supabase.client";
+
+/**
+ * Performs login with email and password using Supabase Auth
+ */
+export async function loginWithPassword(
+  email: string,
+  password: string,
+  remember = true,
+) {
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+    options: {
+      shouldCreateUser: false,
+    },
+  });
+
+  if (error) {
+    throw new Error(getAuthErrorMessage(error.message));
+  }
+
+  return data;
+}
+
+/**
+ * Signs out the current user from all devices
+ */
+export async function logout() {
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) {
+    throw new Error(getAuthErrorMessage(error.message));
+  }
+}
+
+/**
+ * Gets the current session if any
+ */
+export async function getSession() {
+  const {
+    data: { session },
+    error,
+  } = await supabaseClient.auth.getSession();
+
+  if (error) {
+    throw new Error(getAuthErrorMessage(error.message));
+  }
+
+  return session;
+}
