@@ -1,8 +1,15 @@
 import type { APIRoute } from "astro";
 import { createSupabaseServerInstance } from "../../../db/supabase.client";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
 export const POST: APIRoute = async ({ request, cookies }) => {
-  const { email, password } = await request.json();
+  const body = await request.json();
+  const { email, password } = loginSchema.parse(body);
 
   const supabase = createSupabaseServerInstance({
     cookies,
