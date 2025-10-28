@@ -32,10 +32,27 @@ export function SetNewPasswordForm({ onSubmit }: SetNewPasswordFormProps) {
       if (onSubmit) {
         await onSubmit(values);
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        showToast.success(
-          "Hasło zostało zmienione (demo). Za chwilę nastąpi przekierowanie.",
-        );
+        // Call the API endpoint to set new password
+        const response = await fetch("/api/auth/set-new-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            password: values.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Błąd podczas zmiany hasła");
+        }
+
+        showToast.success("Hasło zostało pomyślnie zmienione");
+        
+        // Redirect to app after a short delay
+        setTimeout(() => {
+          window.location.href = "/app";
+        }, 1500);
       }
     } catch (error) {
       const message =

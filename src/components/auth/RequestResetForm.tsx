@@ -47,7 +47,22 @@ export function RequestResetForm({
       if (onSubmit) {
         await onSubmit(values);
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        // Call the API endpoint to request password reset
+        const response = await fetch("/api/auth/request-reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: values.email,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Błąd podczas wysyłania linku");
+        }
+
+        showToast.success("Link do resetu hasła został wysłany");
         setIsSuccess(true);
       }
     } catch (error) {
@@ -80,7 +95,11 @@ export function RequestResetForm({
         <CardContent className="space-y-6">
           <p className="text-muted-foreground">
             Jeśli konto dla podanego adresu istnieje, wyślemy na niego link do
-            zresetowania hasła.
+            resetowania hasła.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Link do resetowania hasła będzie ważny przez określony czas. Po
+            kliknięciu w link z e-maila będziesz mógł ustawić nowe hasło.
           </p>
           <p className="text-sm text-muted-foreground">
             Możesz teraz zamknąć tę stronę lub{" "}
