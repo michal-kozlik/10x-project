@@ -28,15 +28,12 @@ export const POST: APIRoute = async (context) => {
     });
 
     if (error) {
-      return new Response(
-        JSON.stringify({ error: error.message }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     }
 
     // Always return success to prevent email enumeration attacks
@@ -50,7 +47,7 @@ export const POST: APIRoute = async (context) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -61,7 +58,7 @@ export const POST: APIRoute = async (context) => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
     }
 
@@ -72,7 +69,7 @@ export const POST: APIRoute = async (context) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
   }
 };

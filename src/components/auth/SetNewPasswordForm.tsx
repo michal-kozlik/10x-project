@@ -48,7 +48,7 @@ export function SetNewPasswordForm({ onSubmit }: SetNewPasswordFormProps) {
         }
 
         showToast.success("Hasło zostało pomyślnie zmienione");
-        
+
         // Redirect to app after a short delay
         setTimeout(() => {
           window.location.href = "/app";
