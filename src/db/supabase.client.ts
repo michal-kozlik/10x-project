@@ -1,10 +1,10 @@
 import type { AstroCookies } from "astro";
 import { createClient } from "@supabase/supabase-js";
-import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import type { Database } from "./database.types";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_KEY;
 
 // Client instance (for client-side components)
 export const supabaseClient = createClient<Database>(
@@ -12,14 +12,6 @@ export const supabaseClient = createClient<Database>(
   supabaseAnonKey,
 );
 export type SupabaseClient = typeof supabaseClient;
-
-// Cookie options for server-side auth
-export const cookieOptions: CookieOptionsWithName = {
-  path: "/",
-  secure: true,
-  httpOnly: true,
-  sameSite: "lax",
-};
 
 function parseCookieHeader(
   cookieHeader: string,
@@ -35,15 +27,24 @@ export const createSupabaseServerInstance = (context: {
   cookies: AstroCookies;
 }) => {
   const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    cookieOptions,
     cookies: {
       getAll() {
         return parseCookieHeader(context.headers.get("Cookie") ?? "");
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) =>
-          context.cookies.set(name, value, options),
-        );
+        cookiesToSet.forEach(({ name, value, options }) => {
+          // Use secure cookies only in production (when using HTTPS)
+          // In development, we use HTTP, so secure must be false
+          const isProduction = import.meta.env.PROD;
+          const cookieOptions = {
+            ...options,
+            secure: isProduction,
+            httpOnly: true,
+            sameSite: "lax" as const,
+            path: "/",
+          };
+          context.cookies.set(name, value, cookieOptions);
+        });
       },
     },
   });

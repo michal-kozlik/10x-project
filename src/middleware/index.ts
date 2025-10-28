@@ -32,15 +32,13 @@ const auth = defineMiddleware(async (context, next) => {
 
 // Protected routes middleware
 const protect = defineMiddleware(async ({ locals, redirect, url }, next) => {
+  // Skip protection for API routes - they should handle auth themselves
+  if (url.pathname.startsWith("/api/")) {
+    return next();
+  }
+
   // Public routes that don't require auth
-  const publicRoutes = [
-    "/login",
-    "/register",
-    "/reset-password",
-    "/api/auth/login",
-    "/api/auth/register",
-    "/api/auth/reset-password",
-  ];
+  const publicRoutes = ["/login", "/register", "/reset-password"];
   const isPublicRoute = publicRoutes.includes(url.pathname);
 
   // If not authenticated and trying to access protected route
@@ -51,8 +49,9 @@ const protect = defineMiddleware(async ({ locals, redirect, url }, next) => {
     );
   }
 
-  // If authenticated and trying to access login route
-  if (locals.session?.user && isPublicRoute) {
+  // If authenticated and trying to access login/register pages, redirect to app
+  const authPages = ["/login", "/register"];
+  if (locals.session?.user && authPages.includes(url.pathname)) {
     return redirect("/app", 302); // Use temporary redirect
   }
 

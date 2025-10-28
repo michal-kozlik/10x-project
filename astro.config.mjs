@@ -15,7 +15,9 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       proxy: {
-        "/api": {
+        // Proxy diagram-related API calls to .NET backend
+        // Auth routes (/api/auth/*) will be handled by Astro
+        "^/api/diagrams": {
           target: "http://localhost:5149",
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
