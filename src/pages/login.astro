@@ -5,10 +5,10 @@ import LoginForm from "@/components/auth/LoginForm";
 // Get next page from query params
 const next = Astro.url.searchParams.get("next");
 
-// Check if user is already logged in
+// Session check is now handled by middleware, but we double check
 const { session } = Astro.locals;
-if (session) {
-  return Astro.redirect(next ?? "/app");
+if (session?.user) {
+  return Astro.redirect(next ?? "/app", 302); // 302 for temporary redirect
 }
 ---
 

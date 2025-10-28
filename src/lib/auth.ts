@@ -55,57 +55,36 @@ export type RequestResetValues = z.infer<typeof requestResetSchema>;
 export type SetNewPasswordValues = z.infer<typeof setNewPasswordSchema>;
 
 export type AuthErrorCode =
-  | "INVALID_CREDENTIALS"
-  | "USER_NOT_CONFIRMED"
-  | "USER_ALREADY_REGISTERED"
-  | "RATE_LIMITED"
-  | "NETWORK_ERROR"
-  | "UNKNOWN";
+  | "auth/invalid-login-credentials"
+  | "auth/user-not-confirmed"
+  | "auth/network-request-failed"
+  | "auth/too-many-requests"
+  | "auth/unknown";
 
 const ERROR_MESSAGES: Record<AuthErrorCode, string> = {
-  INVALID_CREDENTIALS: "Nieprawidłowy e-mail lub hasło.",
-  USER_NOT_CONFIRMED: "Potwierdź swój adres e-mail, aby kontynuować.",
-  USER_ALREADY_REGISTERED: "Konto z tym adresem e-mail już istnieje.",
-  RATE_LIMITED: "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
-  NETWORK_ERROR: "Wystąpił błąd połączenia. Spróbuj ponownie.",
-  UNKNOWN: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+  "auth/invalid-login-credentials": "Nieprawidłowy e-mail lub hasło.",
+  "auth/user-not-confirmed": "Potwierdź swój adres e-mail, aby kontynuować.",
+  "auth/network-request-failed": "Wystąpił błąd połączenia. Spróbuj ponownie.",
+  "auth/too-many-requests": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
+  "auth/unknown": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
 };
 
-export function mapAuthError(code?: string | null): AuthErrorCode {
-  if (!code) {
-    return "UNKNOWN";
-  }
-
-  const normalized = code.toUpperCase();
-
-  if (normalized.includes("INVALID_LOGIN")) {
-    return "INVALID_CREDENTIALS";
-  }
-
-  if (normalized.includes("EMAIL_NOT_CONFIRMED")) {
-    return "USER_NOT_CONFIRMED";
-  }
-
-  if (normalized.includes("USER_ALREADY_REGISTERED")) {
-    return "USER_ALREADY_REGISTERED";
-  }
-
-  if (normalized.includes("RATE_LIMIT")) {
-    return "RATE_LIMITED";
-  }
-
-  if (normalized.includes("NETWORK")) {
-    return "NETWORK_ERROR";
-  }
-
-  return "UNKNOWN";
-}
-
-export function getAuthErrorMessage(code?: string | null) {
-  return ERROR_MESSAGES[mapAuthError(code)];
+export function getAuthErrorMessage(code: string | null): string {
+  if (!code) return ERROR_MESSAGES["auth/unknown"];
+  return (
+    ERROR_MESSAGES[code as AuthErrorCode] ?? ERROR_MESSAGES["auth/unknown"]
+  );
 }
 
 import { supabaseClient } from "../db/supabase.client";
+
+interface SupabaseAuthError extends Error {
+  code: AuthErrorCode;
+}
+
+function isSupabaseError(error: unknown): error is SupabaseAuthError {
+  return error instanceof Error && "code" in error;
+}
 
 /**
  * Performs login with email and password using Supabase Auth
@@ -113,30 +92,32 @@ import { supabaseClient } from "../db/supabase.client";
 export async function loginWithPassword(
   email: string,
   password: string,
-  remember = true,
-) {
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
+): Promise<void> {
+  const { error } = await supabaseClient.auth.signInWithPassword({
     email,
     password,
-    options: {
-      shouldCreateUser: false,
-    },
   });
 
   if (error) {
-    throw new Error(getAuthErrorMessage(error.message));
+    const code =
+      error.status === 429
+        ? "auth/too-many-requests"
+        : error.status === 400
+          ? "auth/invalid-login-credentials"
+          : "auth/unknown";
+    throw new Error(getAuthErrorMessage(code));
   }
-
-  return data;
 }
 
 /**
  * Signs out the current user from all devices
  */
-export async function logout() {
-  const { error } = await supabaseClient.auth.signOut();
-  if (error) {
-    throw new Error(getAuthErrorMessage(error.message));
+export async function logout(): Promise<void> {
+  try {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) throw error;
+  } catch (error) {
+    throw new Error(getAuthErrorMessage("auth/network-request-failed"));
   }
 }
 
@@ -144,14 +125,20 @@ export async function logout() {
  * Gets the current session if any
  */
 export async function getSession() {
-  const {
-    data: { session },
-    error,
-  } = await supabaseClient.auth.getSession();
-
-  if (error) {
-    throw new Error(getAuthErrorMessage(error.message));
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
+    if (error) {
+      throw Object.assign(new Error(error.message), {
+        code: "auth/network-request-failed",
+      } as SupabaseAuthError);
+    }
+    return session;
+  } catch (error) {
+    throw new Error(
+      getAuthErrorMessage(isSupabaseError(error) ? error.code : "auth/unknown"),
+    );
   }
-
-  return session;
 }

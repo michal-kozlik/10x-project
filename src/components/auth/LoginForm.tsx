@@ -7,28 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { showToast } from "@/lib/toast";
-import {
-  getAuthErrorMessage,
-  loginSchema,
-  type LoginFormValues,
-  loginWithPassword,
-} from "@/lib/auth";
+import { loginSchema, type LoginFormValues } from "@/lib/auth";
 
 interface LoginFormProps {
   nextPath?: string | null;
-  onSubmit?: (values: LoginFormValues) => Promise<void>;
-  onForgotPasswordClick?: () => void;
-  onRegisterClick?: () => void;
-  redirectToRegister?: boolean;
-  redirectToReset?: boolean;
 }
 
-export function LoginForm({
-  nextPath,
-  onSubmit,
-  onForgotPasswordClick,
-  onRegisterClick,
-}: LoginFormProps) {
+export function LoginForm({ nextPath }: LoginFormProps) {
   const {
     register,
     handleSubmit,
@@ -46,51 +31,43 @@ export function LoginForm({
 
   const [serverError, setServerError] = useState<string | null>(null);
 
-  // Navigation will be handled by form submission to ensure proper transitions in Astro
-
-  // Use a simple anchor element with enhanced onClick handling for navigation
-  const handleNavigation = (path: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (typeof window !== "undefined") {
-      // Use standard href to ensure proper behavior with Astro View Transitions
-      window.location.href = path;
-    }
-  };
-
-  const handleForgotPassword = handleNavigation("/reset-password");
-  const handleRegister = handleNavigation("/register");
-
   const onSubmitHandler = async (values: LoginFormValues) => {
     setServerError(null);
     try {
-      if (onSubmit) {
-        await onSubmit(values);
-      } else {
-        await loginWithPassword(values.email, values.password, values.remember);
-        showToast.success("Zalogowano pomyślnie");
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      });
 
-        // Use proper client-side navigation
-        handleNavigation(nextPath ?? "/app")();
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Błąd logowania");
       }
+
+      showToast.success("Zalogowano pomyślnie");
+      window.location.href = nextPath ?? "/app";
     } catch (error) {
-      const code = (error as { code?: string | null })?.code;
       const message =
-        (error as Error | undefined)?.message ?? getAuthErrorMessage(code);
+        error instanceof Error ? error.message : "Nieznany błąd logowania";
       setServerError(message);
       showToast.error(message);
     }
   };
 
   const submitHandler = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Najpierw wymuszamy walidację wszystkich pól
+    e.preventDefault(); // Prevent form from submitting normally
+
     const isValid = await trigger();
     if (!isValid) {
       showToast.error("Wypełnij wymagane pola");
       return;
     }
 
-    // Jeśli walidacja przeszła, wywołujemy handleSubmit
     handleSubmit(onSubmitHandler)(e);
   };
 
@@ -156,7 +133,6 @@ export function LoginForm({
             <a
               href="/reset-password"
               className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-              onClick={onForgotPasswordClick ?? handleForgotPassword}
             >
               Zapomniałeś hasła?
             </a>
@@ -184,7 +160,6 @@ export function LoginForm({
           <a
             href="/register"
             className="ml-1 font-semibold text-primary underline-offset-4 hover:underline"
-            onClick={onRegisterClick ?? handleRegister}
           >
             Załóż konto
           </a>
