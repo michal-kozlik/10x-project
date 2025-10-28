@@ -1,13 +1,14 @@
 ---
 import "../styles/global.css";
 import { Toaster } from "@/components/Toaster";
-import { supabaseClient } from "@/db/supabase.client";
+import Header from "@/components/Header.astro";
 
 interface Props {
   title?: string;
+  showHeader?: boolean;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "10x Astro Starter", showHeader = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -20,14 +21,17 @@ const { title = "10x Astro Starter" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    {showHeader && <Header />}
     <slot />
     <Toaster client:load />
   </body>
 </html>
 
 <script>
-import { supabaseClient } from "@/db/supabase.client"; // Make Supabase client available globally window.supabase =
-supabaseClient;
+  import { supabaseClient } from "@/db/supabase.client";
+  
+  // Make Supabase client available globally
+  window.supabase = supabaseClient;
 </script>
 
 <style>
