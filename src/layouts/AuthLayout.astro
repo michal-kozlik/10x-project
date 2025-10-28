@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { Toaster } from "@/components/Toaster";
+import Header from "@/components/Header.astro";
 
 interface Props {
   title?: string;
@@ -21,7 +22,8 @@ const { title = "Witaj ponownie", subtitle } = props;
     <title>{title}</title>
   </head>
   <body class="min-h-screen bg-gradient-to-br from-background to-muted text-foreground">
-    <div class="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+    <Header />
+    <div class="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-12">
       <div class="w-full max-w-md">
         <header class="mb-8 text-center">
           <h1 class="text-3xl font-semibold tracking-tight text-foreground">{title}</h1>

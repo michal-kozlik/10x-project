@@ -1,0 +1,19 @@
+---
+import { UserMenu } from "@/components/UserMenu";
+
+const user = Astro.locals.user;
+---
+
+<header class="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm dark:bg-gray-950/80">
+  <div class="container mx-auto flex h-16 items-center justify-between px-4">
+    <div class="flex items-center gap-4">
+      <a href={user ? "/app" : "/"} class="text-xl font-bold">
+        Sudoku Solver
+      </a>
+    </div>
+
+    <nav class="flex items-center gap-6">
+      {user && <UserMenu client:load userEmail={user.email ?? ""} />}
+    </nav>
+  </div>
+</header>

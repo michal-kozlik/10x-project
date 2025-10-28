@@ -11,6 +11,10 @@ declare global {
       user: User | null;
     }
   }
+
+  interface Window {
+    supabase: SupabaseClient<Database>;
+  }
 }
 
 interface ImportMetaEnv {

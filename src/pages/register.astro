@@ -1,8 +1,23 @@
 ---
 import AuthLayout from "@/layouts/AuthLayout.astro";
 import RegisterForm from "@/components/auth/RegisterForm";
+
+// Get next page from query params
+const next = Astro.url.searchParams.get("next");
+
+// Session check - if user is already logged in, redirect to app
+const { session } = Astro.locals;
+if (session?.user) {
+  return Astro.redirect(next ?? "/app", 302); // 302 for temporary redirect
+}
 ---
 
-<AuthLayout title="Załóż konto">
-  <RegisterForm client:load />
+<AuthLayout
+  title="Załóż konto"
+  subtitle="Wprowadź swoje dane, aby utworzyć konto"
+>
+  <RegisterForm 
+    nextPath={next}
+    client:load
+  />
 </AuthLayout>
