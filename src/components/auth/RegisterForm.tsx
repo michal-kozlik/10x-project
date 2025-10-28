@@ -7,18 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { showToast } from "@/lib/toast";
-import {
-  getAuthErrorMessage,
-  registerSchema,
-  type RegisterFormValues,
-} from "@/lib/auth";
+import { registerSchema, type RegisterFormValues } from "@/lib/auth";
 
 interface RegisterFormProps {
-  onSubmit?: (values: RegisterFormValues) => Promise<void>;
-  onLoginClick?: () => void;
+  nextPath?: string | null;
 }
 
-export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
+export function RegisterForm({ nextPath }: RegisterFormProps) {
   const {
     register,
     handleSubmit,
@@ -35,28 +30,38 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
-
-  const handleLoginClick = () => {
-    if (typeof window !== "undefined") {
-      window.location.href = "/login";
-    }
-  };
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const onSubmitHandler = async (values: RegisterFormValues) => {
     setServerError(null);
     try {
-      if (onSubmit) {
-        await onSubmit(values);
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Błąd rejestracji");
+      }
+
+      // Check if email confirmation is required
+      if (data.needsConfirmation) {
+        setShowConfirmation(true);
+        showToast.success(data.message);
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        showToast.success(
-          "Konto utworzone (demo). Sprawdź skrzynkę e-mail, aby potwierdzić rejestrację.",
-        );
+        // If no confirmation needed, redirect to app
+        showToast.success("Konto utworzone pomyślnie");
+        window.location.href = nextPath ?? "/app";
       }
     } catch (error) {
-      const code = (error as { code?: string | null })?.code;
       const message =
-        (error as Error | undefined)?.message ?? getAuthErrorMessage(code);
+        error instanceof Error ? error.message : "Nieznany błąd rejestracji";
       setServerError(message);
       showToast.error(message);
     }
@@ -74,6 +79,36 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
     // Jeśli walidacja przeszła, wywołujemy handleSubmit
     handleSubmit(onSubmitHandler)(e);
   };
+
+  // If email confirmation is shown, display that instead of the form
+  if (showConfirmation) {
+    return (
+      <Card data-testid="register-confirmation">
+        <CardHeader>
+          <CardTitle className="text-2xl">
+            Sprawdź swoją skrzynkę e-mail
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            Wysłaliśmy link aktywacyjny na podany adres e-mail. Kliknij w link,
+            aby potwierdzić konto i dokończyć rejestrację.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Jeśli nie widzisz wiadomości, sprawdź folder spam.
+          </p>
+          <div className="text-center pt-4">
+            <a
+              href="/login"
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              Przejdź do logowania
+            </a>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card data-testid="register-card">
@@ -169,7 +204,6 @@ export function RegisterForm({ onSubmit, onLoginClick }: RegisterFormProps) {
           <a
             href="/login"
             className="font-semibold text-primary underline-offset-4 hover:underline"
-            onClick={onLoginClick ?? handleLoginClick}
           >
             Zaloguj się
           </a>
