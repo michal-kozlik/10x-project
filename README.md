@@ -27,6 +27,15 @@ Welcome to **10x-project**, a full-stack web application that combines a powerfu
   - Shadcn/ui
 - **Backend:**
   - .NET (C#)
+- **Testing:**
+  - Vitest (Unit & Integration testing)
+  - Testing Library (React components)
+  - MSW (API mocking)
+  - Playwright (E2E testing)
+  - axe-core (Accessibility testing)
+  - k6/Artillery (Performance testing)
+  - Lighthouse (UI metrics)
+  - c8/istanbul (Code coverage)
 - **Additional Tools:**
   - Node.js (as specified by the .nvmrc and package.json)
 
