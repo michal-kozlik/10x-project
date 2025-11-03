@@ -93,11 +93,14 @@ export function LoginForm({ nextPath }: LoginFormProps) {
               placeholder="jan.kowalski@example.com"
               autoComplete="email"
               required
+              data-testid="login-email-input"
               {...register("email")}
               aria-invalid={Boolean(errors.email)}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
+              <p className="text-sm text-destructive" data-testid="login-email-error">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -111,11 +114,12 @@ export function LoginForm({ nextPath }: LoginFormProps) {
               placeholder="********"
               autoComplete="current-password"
               required
+              data-testid="login-password-input"
               {...register("password")}
               aria-invalid={Boolean(errors.password)}
             />
             {errors.password && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" data-testid="login-password-error">
                 {errors.password.message}
               </p>
             )}
@@ -126,6 +130,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
               <input
                 type="checkbox"
                 className="h-4 w-4 rounded border-input text-primary focus-visible:ring-2"
+                data-testid="login-remember-checkbox"
                 {...register("remember")}
               />
               <span>Zapamiętaj mnie</span>
@@ -133,13 +138,17 @@ export function LoginForm({ nextPath }: LoginFormProps) {
             <a
               href="/reset-password"
               className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+              data-testid="login-forgot-password-link"
             >
               Zapomniałeś hasła?
             </a>
           </div>
 
           {serverError && (
-            <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <div 
+              className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              data-testid="login-server-error"
+            >
               {serverError}
             </div>
           )}
@@ -149,6 +158,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
             className="w-full"
             disabled={isSubmitting}
             aria-busy={isSubmitting}
+            data-testid="login-submit-button"
           >
             <LogIn className="h-4 w-4" />
             {isSubmitting ? "Logowanie..." : "Zaloguj się"}
@@ -160,6 +170,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
           <a
             href="/register"
             className="ml-1 font-semibold text-primary underline-offset-4 hover:underline"
+            data-testid="login-register-link"
           >
             Załóż konto
           </a>
