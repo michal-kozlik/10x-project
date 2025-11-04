@@ -45,7 +45,9 @@ describe("Pagination", () => {
     expect(screen.getByRole("button", { name: /next/i })).not.toBeDisabled();
 
     rerender(<Pagination page={3} limit={10} total={22} onChange={vi.fn()} />);
-    expect(screen.getByRole("button", { name: /previous/i })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /previous/i }),
+    ).not.toBeDisabled();
     expect(screen.getByRole("button", { name: /next/i })).toBeDisabled();
   });
 });

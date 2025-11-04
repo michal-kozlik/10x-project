@@ -36,7 +36,12 @@ describe("EditorPanel", () => {
   });
 
   it("renders SolvedDiagramView when diagram has solution", () => {
-    mockHook.diagram = { id: 1, name: "A", definition: "1".repeat(81), solution: "123456789".repeat(9) } as any;
+    mockHook.diagram = {
+      id: 1,
+      name: "A",
+      definition: "1".repeat(81),
+      solution: "123456789".repeat(9),
+    } as any;
     render(<EditorPanel />);
     expect(screen.getByText(/solution/i)).toBeInTheDocument();
   });
@@ -48,17 +53,27 @@ describe("EditorPanel", () => {
 
     const name = screen.getByLabelText(/name/i) as HTMLInputElement;
     await user.type(name, "X");
-    expect(mockHook.updateContent).toHaveBeenLastCalledWith("AX", "B".repeat(81));
+    expect(mockHook.updateContent).toHaveBeenLastCalledWith(
+      "AX",
+      "B".repeat(81),
+    );
 
     const def = screen.getByLabelText(/definition/i) as HTMLTextAreaElement;
     await user.type(def, "1\n2");
     // SudokuTextarea strips newlines on emit
-    expect(mockHook.updateContent).toHaveBeenLastCalledWith("AX", "B".repeat(81) + "12");
+    expect(mockHook.updateContent).toHaveBeenLastCalledWith(
+      "AX",
+      "B".repeat(81) + "12",
+    );
   });
 
   it("calls onSave from hook when Save clicked", async () => {
     const user = userEvent.setup();
-    mockHook.diagram = { id: 1, name: " A ", definition: "D".repeat(81) } as any;
+    mockHook.diagram = {
+      id: 1,
+      name: " A ",
+      definition: "D".repeat(81),
+    } as any;
     render(<EditorPanel />);
 
     const save = screen.getByRole("button", { name: /save/i });

@@ -4,7 +4,11 @@ import userEvent from "@testing-library/user-event";
 import { SudokuEditor } from "./SudokuEditor";
 
 describe("SudokuEditor", () => {
-  const baseDiagram = { id: 1, name: "My Diagram", definition: "1".repeat(81) } as any;
+  const baseDiagram = {
+    id: 1,
+    name: "My Diagram",
+    definition: "1".repeat(81),
+  } as any;
 
   it("trims name on save and passes definition", async () => {
     const user = userEvent.setup();
@@ -27,7 +31,10 @@ describe("SudokuEditor", () => {
     const save = screen.getByRole("button", { name: /save/i });
     await user.click(save);
 
-    expect(onSave).toHaveBeenCalledWith({ name: "Foo", definition: baseDiagram.definition });
+    expect(onSave).toHaveBeenCalledWith({
+      name: "Foo",
+      definition: baseDiagram.definition,
+    });
   });
 
   it("solve is enabled only when diagram.id exists and calls onSolve with id", async () => {
@@ -111,10 +118,15 @@ describe("SudokuEditor", () => {
     await user.type(nameInput, "X");
     expect(onContentChange).toHaveBeenLastCalledWith("AX", "B".repeat(81));
 
-    const definition = screen.getByLabelText(/definition/i) as HTMLTextAreaElement;
+    const definition = screen.getByLabelText(
+      /definition/i,
+    ) as HTMLTextAreaElement;
     await user.type(definition, "1");
     // SudokuTextarea removes newlines on emit, but here we only typed one char append
-    expect(onContentChange).toHaveBeenLastCalledWith("AX", "B".repeat(81) + "1");
+    expect(onContentChange).toHaveBeenLastCalledWith(
+      "AX",
+      "B".repeat(81) + "1",
+    );
   });
 
   it("updates inputs when diagram prop changes", () => {
@@ -129,7 +141,9 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    expect((screen.getByLabelText(/name/i) as HTMLInputElement).value).toBe("Old");
+    expect((screen.getByLabelText(/name/i) as HTMLInputElement).value).toBe(
+      "Old",
+    );
 
     rerender(
       <SudokuEditor
@@ -142,6 +156,8 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    expect((screen.getByLabelText(/name/i) as HTMLInputElement).value).toBe("New");
+    expect((screen.getByLabelText(/name/i) as HTMLInputElement).value).toBe(
+      "New",
+    );
   });
 });

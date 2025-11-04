@@ -98,7 +98,10 @@ export function LoginForm({ nextPath }: LoginFormProps) {
               aria-invalid={Boolean(errors.email)}
             />
             {errors.email && (
-              <p className="text-sm text-destructive" data-testid="login-email-error">
+              <p
+                className="text-sm text-destructive"
+                data-testid="login-email-error"
+              >
                 {errors.email.message}
               </p>
             )}
@@ -119,7 +122,10 @@ export function LoginForm({ nextPath }: LoginFormProps) {
               aria-invalid={Boolean(errors.password)}
             />
             {errors.password && (
-              <p className="text-sm text-destructive" data-testid="login-password-error">
+              <p
+                className="text-sm text-destructive"
+                data-testid="login-password-error"
+              >
                 {errors.password.message}
               </p>
             )}
@@ -145,7 +151,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
           </div>
 
           {serverError && (
-            <div 
+            <div
               className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
               data-testid="login-server-error"
             >

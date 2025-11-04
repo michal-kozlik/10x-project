@@ -23,7 +23,8 @@ function makeDiagram(partial: Partial<DiagramDTO> = {}): DiagramDTO {
     name: partial.name ?? "Alpha",
     definition: partial.definition ?? "abc",
     solution: partial.solution ?? null,
-    created_at: partial.created_at ?? new Date("2025-01-02T03:04:05Z").toISOString(),
+    created_at:
+      partial.created_at ?? new Date("2025-01-02T03:04:05Z").toISOString(),
     updated_at: partial.updated_at,
   };
 }
@@ -76,7 +77,9 @@ describe("DiagramsTable", () => {
     );
 
     // sort by "Utworzono" -> created_at
-    const createdHeader = screen.getByRole("columnheader", { name: /utworzono/i });
+    const createdHeader = screen.getByRole("columnheader", {
+      name: /utworzono/i,
+    });
     await user.click(createdHeader);
     expect(onSort).toHaveBeenCalledWith("created_at");
 
@@ -87,8 +90,16 @@ describe("DiagramsTable", () => {
   });
 
   it("pokazuje fallback updated_at → created_at, gdy updated_at brak", () => {
-    const withUpdated = makeDiagram({ id: 1, created_at: "2025-01-01T00:00:00Z", updated_at: "2025-01-03T00:00:00Z" });
-    const withoutUpdated = makeDiagram({ id: 2, created_at: "2025-01-02T00:00:00Z", updated_at: undefined });
+    const withUpdated = makeDiagram({
+      id: 1,
+      created_at: "2025-01-01T00:00:00Z",
+      updated_at: "2025-01-03T00:00:00Z",
+    });
+    const withoutUpdated = makeDiagram({
+      id: 2,
+      created_at: "2025-01-02T00:00:00Z",
+      updated_at: undefined,
+    });
 
     render(
       <DiagramsTable
