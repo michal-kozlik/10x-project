@@ -50,7 +50,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install --no-save --force @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu
+          npm install --no-save --force @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
 
       - name: Run unit tests with coverage
         run: npm run test:coverage
@@ -137,7 +137,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install --no-save --force @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu
+          npm install --no-save --force @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
