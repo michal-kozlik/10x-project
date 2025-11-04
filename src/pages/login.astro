@@ -16,8 +16,10 @@ if (session?.user) {
   title="Witaj ponownie"
   subtitle={next ? `Po zalogowaniu wrócisz do ${next}` : undefined}
 >
-  <LoginForm 
-    nextPath={next}
-    client:load
-  />
+  <div data-testid="login-page">
+    <LoginForm 
+      nextPath={next}
+      client:load
+    />
+  </div>
 </AuthLayout>

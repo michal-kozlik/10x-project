@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
 import type { PlaywrightTestConfig } from "@playwright/test";
+
+// Load E2E environment variables from .env.test
+dotenv.config({ path: ".env.test" });
 
 const config: PlaywrightTestConfig = {
   testDir: "./e2e",
@@ -29,10 +33,11 @@ const config: PlaywrightTestConfig = {
   ],
   outputDir: "test-results/",
   webServer: {
-    command: "npm run dev",
+    // Use a production build + preview to avoid Vite dep-scan issues in dev
+    command: "npm run build && npm run preview -- --port 4321",
     port: 4321,
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 180 * 1000,
   },
 };
 
