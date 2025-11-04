@@ -71,8 +71,8 @@ export function DeleteDiagramDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete diagram</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete "{diagram.name}"? This action cannot
-            be undone.
+            Are you sure you want to delete &quot;{diagram.name}&quot;? This
+            action cannot be undone.
             {isDeleting && (
               <span className="block mt-2 text-muted-foreground" role="status">
                 Deleting...

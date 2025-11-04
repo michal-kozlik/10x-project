@@ -92,13 +92,15 @@ describe("UserMenu", () => {
   });
 
   it("shows loading state during logout process", async () => {
-    let resolvePromise: Function;
+    let resolvePromise: ((value: unknown) => void) | undefined;
     global.fetch = vi.fn().mockImplementationOnce(
       () =>
         new Promise((resolve) => {
           resolvePromise = resolve;
         }),
     );
+    // Use resolvePromise later
+    void resolvePromise;
 
     render(<UserMenu userEmail={testEmail} />);
     const logoutButton = screen.getByRole("button", { name: /wyloguj/i });

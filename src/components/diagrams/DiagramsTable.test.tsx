@@ -6,7 +6,15 @@ import type { DiagramDTO } from "../../types";
 
 // Mock DeleteDiagramDialog to avoid Radix and focus on table logic
 vi.mock("./DeleteDiagramDialog", () => ({
-  DeleteDiagramDialog: ({ diagram, onConfirm, disabled }: any) => (
+  DeleteDiagramDialog: ({
+    diagram,
+    onConfirm,
+    disabled,
+  }: {
+    diagram: { id: number };
+    onConfirm: (id: number) => void;
+    disabled?: boolean;
+  }) => (
     <button
       aria-label={`mock-delete ${diagram.id}`}
       disabled={disabled}

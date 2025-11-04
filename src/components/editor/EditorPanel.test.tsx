@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import EditorPanel from "./EditorPanel";
+import type { DiagramDTO } from "@/types";
 
 // Mock the editor hook used by EditorPanel
 const mockHook = {
-  diagram: null as any,
+  diagram: null as DiagramDTO | null,
   isDirty: true,
   validationErrors: [] as string[],
   onSave: vi.fn(),
@@ -41,14 +42,21 @@ describe("EditorPanel", () => {
       name: "A",
       definition: "1".repeat(81),
       solution: "123456789".repeat(9),
-    } as any;
+      created_at: new Date().toISOString(),
+    };
     render(<EditorPanel />);
     expect(screen.getByText(/solution/i)).toBeInTheDocument();
   });
 
   it("propagates content changes via updateContent (name and definition)", async () => {
     const user = userEvent.setup();
-    mockHook.diagram = { id: 1, name: "A", definition: "B".repeat(81) } as any;
+    mockHook.diagram = {
+      id: 1,
+      name: "A",
+      definition: "B".repeat(81),
+      solution: null,
+      created_at: new Date().toISOString(),
+    };
     render(<EditorPanel />);
 
     const name = screen.getByLabelText(/name/i) as HTMLInputElement;
@@ -73,7 +81,9 @@ describe("EditorPanel", () => {
       id: 1,
       name: " A ",
       definition: "D".repeat(81),
-    } as any;
+      solution: null,
+      created_at: new Date().toISOString(),
+    };
     render(<EditorPanel />);
 
     const save = screen.getByRole("button", { name: /save/i });

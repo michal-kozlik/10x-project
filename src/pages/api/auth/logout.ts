@@ -10,6 +10,8 @@ export const POST: APIRoute = async ({ locals, cookies, request }) => {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
+      // Log logout error for debugging
+      // eslint-disable-next-line no-console
       console.error("Logout error:", error);
     }
 
@@ -41,6 +43,8 @@ export const POST: APIRoute = async ({ locals, cookies, request }) => {
       },
     );
   } catch (error) {
+    // Log exception during logout for debugging
+    // eslint-disable-next-line no-console
     console.error("Logout exception:", error);
     return new Response(
       JSON.stringify({

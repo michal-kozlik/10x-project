@@ -9,8 +9,8 @@ export const Events = {
 
 export interface EventTypes {
   [Events.DIAGRAM_SELECT]: DiagramDTO;
-  [Events.DIAGRAM_UPDATE]: void;
-  [Events.DIAGRAM_DELETE]: void;
+  [Events.DIAGRAM_UPDATE]: undefined;
+  [Events.DIAGRAM_DELETE]: undefined;
   [Events.SUDOKU_VALIDATION]: string[];
 }
 

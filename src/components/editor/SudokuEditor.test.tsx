@@ -2,13 +2,16 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SudokuEditor } from "./SudokuEditor";
+import type { DiagramDTO } from "@/types";
 
 describe("SudokuEditor", () => {
-  const baseDiagram = {
+  const baseDiagram: DiagramDTO = {
     id: 1,
     name: "My Diagram",
     definition: "1".repeat(81),
-  } as any;
+    solution: null,
+    created_at: new Date().toISOString(),
+  };
 
   it("trims name on save and passes definition", async () => {
     const user = userEvent.setup();
@@ -40,9 +43,10 @@ describe("SudokuEditor", () => {
   it("solve is enabled only when diagram.id exists and calls onSolve with id", async () => {
     const user = userEvent.setup();
     const onSolve = vi.fn();
+    const diagramWithoutId = { ...baseDiagram, id: 0 };
     const { rerender } = render(
       <SudokuEditor
-        diagram={{ ...baseDiagram, id: undefined }}
+        diagram={diagramWithoutId}
         isDirty={true}
         validationErrors={[]}
         onSave={vi.fn()}
@@ -104,7 +108,13 @@ describe("SudokuEditor", () => {
     const onContentChange = vi.fn();
     render(
       <SudokuEditor
-        diagram={{ id: 2, name: "A", definition: "B".repeat(81) } as any}
+        diagram={{
+          id: 2,
+          name: "A",
+          definition: "B".repeat(81),
+          solution: null,
+          created_at: new Date().toISOString(),
+        }}
         isDirty={true}
         validationErrors={[]}
         onSave={vi.fn()}
@@ -132,7 +142,13 @@ describe("SudokuEditor", () => {
   it("updates inputs when diagram prop changes", () => {
     const { rerender } = render(
       <SudokuEditor
-        diagram={{ id: 1, name: "Old", definition: "1".repeat(81) } as any}
+        diagram={{
+          id: 1,
+          name: "Old",
+          definition: "1".repeat(81),
+          solution: null,
+          created_at: new Date().toISOString(),
+        }}
         isDirty={false}
         validationErrors={[]}
         onSave={vi.fn()}
@@ -147,7 +163,13 @@ describe("SudokuEditor", () => {
 
     rerender(
       <SudokuEditor
-        diagram={{ id: 1, name: "New", definition: "2".repeat(81) } as any}
+        diagram={{
+          id: 1,
+          name: "New",
+          definition: "2".repeat(81),
+          solution: null,
+          created_at: new Date().toISOString(),
+        }}
         isDirty={false}
         validationErrors={[]}
         onSave={vi.fn()}

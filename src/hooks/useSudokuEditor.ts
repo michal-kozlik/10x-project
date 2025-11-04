@@ -7,8 +7,6 @@ import {
 } from "../lib/events";
 import { showToast } from "../lib/toast";
 
-type SetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
-
 interface EditorState {
   diagram: DiagramDTO | null;
   isDirty: boolean;
@@ -134,7 +132,7 @@ export function useSudokuEditor() {
       showToast.dismiss(loadingToastId);
       showToast.success("Diagram solved successfully!");
     } catch (error) {
-      console.error("Error solving diagram:", error);
+      // Error solving diagram - show toast and re-throw
       showToast.dismiss(loadingToastId);
       showToast.error(
         error instanceof Error ? error.message : "Failed to solve diagram",

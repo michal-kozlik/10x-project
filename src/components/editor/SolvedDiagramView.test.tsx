@@ -9,14 +9,15 @@ describe("SolvedDiagramView", () => {
     const { container } = render(<SolvedDiagramView solution={SOL} />);
     const grid = container.querySelector("div.grid.grid-cols-9");
     expect(grid).toBeTruthy();
-    const cells = grid!.querySelectorAll(":scope > div");
-    expect(cells.length).toBe(81);
+    const cells = grid?.querySelectorAll(":scope > div");
+    expect(cells?.length).toBe(81);
   });
 
   it("applies 3x3 block borders correctly", () => {
     const { container } = render(<SolvedDiagramView solution={SOL} />);
-    const grid = container.querySelector("div.grid.grid-cols-9")!;
-    const cells = Array.from(grid.querySelectorAll(":scope > div"));
+    const grid = container.querySelector("div.grid.grid-cols-9");
+    expect(grid).toBeTruthy();
+    const cells = Array.from(grid?.querySelectorAll(":scope > div") || []);
 
     // Helper to pick cell by row/col
     const idx = (row: number, col: number) => row * 9 + col;

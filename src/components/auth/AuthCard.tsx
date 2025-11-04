@@ -16,7 +16,6 @@ export function AuthCard({
   children,
   onSubmit,
   footer,
-  className,
   ...props
 }: AuthCardProps) {
   return (
