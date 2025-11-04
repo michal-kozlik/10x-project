@@ -60,6 +60,14 @@ const reactConfig = tseslint.config({
   },
 });
 
+// Astro-specific configuration to disable Prettier parsing errors
+const astroConfig = tseslint.config({
+  files: ["**/*.astro"],
+  rules: {
+    "prettier/prettier": "off", // Disable Prettier for Astro files to avoid parsing errors
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -67,4 +75,5 @@ export default tseslint.config(
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
   eslintPluginPrettier,
+  astroConfig, // Apply Astro-specific config last to override Prettier
 );

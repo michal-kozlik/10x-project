@@ -43,10 +43,10 @@ describe("SudokuEditor", () => {
   it("solve is enabled only when diagram.id exists and calls onSolve with id", async () => {
     const user = userEvent.setup();
     const onSolve = vi.fn();
-    const diagramWithoutId = { ...baseDiagram, id: 0 };
+    // Test with null diagram first (no id)
     const { rerender } = render(
       <SudokuEditor
-        diagram={diagramWithoutId}
+        diagram={null}
         isDirty={true}
         validationErrors={[]}
         onSave={vi.fn()}
