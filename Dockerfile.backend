@@ -1,0 +1,69 @@
+# Multi-stage build for .NET 9 API
+# Base image: .NET 9 SDK on Alpine for smaller footprint
+
+# ============================================
+# Stage 1: Build
+# Build the .NET application
+# ============================================
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
+
+WORKDIR /src
+
+# Copy solution and project files first for optimal caching
+# Only restore if these files change
+COPY backend/SudokuApi.sln ./
+COPY backend/SudokuApi.csproj ./
+
+# Restore NuGet packages
+RUN dotnet restore "SudokuApi.csproj"
+
+# Copy the rest of the application source
+COPY backend/ ./
+
+# Build the application in Release mode
+# Output to /app/build directory
+RUN dotnet build "SudokuApi.csproj" -c Release -o /app/build
+
+# ============================================
+# Stage 2: Publish
+# Create optimized publish output
+# ============================================
+FROM build AS publish
+
+# Publish the application for production
+# This creates a self-contained deployment package
+RUN dotnet publish "SudokuApi.csproj" \
+    -c Release \
+    -o /app/publish \
+    --no-restore \
+    /p:UseAppHost=false
+
+# ============================================
+# Stage 3: Runtime
+# Final production image with ASP.NET Core runtime only
+# ============================================
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
+
+WORKDIR /app
+
+# Copy published application from publish stage
+COPY --from=publish /app/publish .
+
+# Expose port 8080 as per Docker best practices
+# ASP.NET Core will be configured to listen on this port via environment variable
+EXPOSE 8080
+
+# Document expected environment variables (for reference only)
+# These must be provided at runtime via -e flag:
+# - ASPNETCORE_URLS=http://0.0.0.0:8080 (bind address and port)
+# - ASPNETCORE_ENVIRONMENT=Production (runtime environment)
+# - SUPABASE_URL (Supabase project URL)
+# - SUPABASE_KEY (Supabase service role key or anon key)
+# - ConnectionStrings__Supabase (PostgreSQL connection string)
+
+# Set default ASP.NET Core configuration
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Run the application
+ENTRYPOINT ["dotnet", "SudokuApi.dll"]

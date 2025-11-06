@@ -1,0 +1,71 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode
+.idea
+.cursor
+*.swp
+*.swo
+*~
+
+# Node.js dependencies and build artifacts
+node_modules
+dist
+.astro
+coverage
+.vitest
+.cache
+
+# Test files and directories
+test-results
+playwright-report
+e2e
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Environment files (should be provided at runtime)
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# .NET build artifacts
+backend/bin
+backend/obj
+backend/Test
+backend/Tests
+backend/*.user
+backend/*.suo
+backend/*.userosscache
+backend/.vs
+
+# Documentation and CI/CD files
+README.md
+*.md
+.github
+.gitlab-ci.yml
+azure-pipelines.yml
+
+# Supabase local files
+supabase/.branches
+supabase/.temp
+supabase/functions
+
+# Misc
+*.bak
+*.tmp
+.husky
