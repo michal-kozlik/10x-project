@@ -1,0 +1,84 @@
+# Docker Compose configuration for local development and testing
+# This file orchestrates both frontend and backend services
+
+services:
+  # Backend .NET API service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: ghcr.io/michal-kozlik/sudoku-solver:backend-latest
+    container_name: sudoku-backend
+    restart: unless-stopped
+    ports:
+      - "5149:8080"  # Map container port 8080 to host port 5149
+    # Use Docker-specific environment file
+    # This allows different configs for dev mode (npm run dev) vs Docker
+    env_file:
+      - .env.docker
+    environment:
+      # ASP.NET Core configuration
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+      - ASPNETCORE_ENVIRONMENT=Production
+      
+      # PostgreSQL connection string (ONLY thing backend needs)
+      # Backend connects directly to Supabase PostgreSQL database
+      - ConnectionStrings__SupabaseDb=${SUPABASE_CONNECTION_STRING}
+    networks:
+      - sudoku-network
+    healthcheck:
+      # Check if the HTTP server is responding
+      # Look for "Connecting to" in output which means the server is reachable
+      # This handles 404, 500, or any HTTP response as "healthy"
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --timeout=5 --spider http://127.0.0.1:8080/ 2>&1 | grep -q 'Connecting to'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Frontend Astro + React service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        # Pass Supabase config as build arguments
+        # Required at build time for Vite/Astro to inline these values
+        # Use host.docker.internal to reach host machine's Supabase from container
+        # NOTE: This is the standard Supabase local development key (public, safe to commit)
+        PUBLIC_SUPABASE_URL: http://host.docker.internal:54321
+        PUBLIC_SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+    image: ghcr.io/michal-kozlik/sudoku-solver:frontend-latest
+    container_name: sudoku-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:8080"  # Map container port 8080 to host port 3000
+    # Use Docker-specific environment file
+    # This allows different configs for dev mode (npm run dev) vs Docker
+    env_file:
+      - .env.docker
+    environment:
+      # Node.js server configuration
+      - HOST=0.0.0.0
+      - PORT=8080
+      - NODE_ENV=production
+      # Backend URL for API proxy (uses Docker network)
+      - BACKEND_URL=http://backend:8080
+    networks:
+      - sudoku-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      # Check if the HTTP server is responding
+      # Look for "Connecting to" in output which means the server is reachable
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --timeout=5 --spider http://127.0.0.1:8080/ 2>&1 | grep -q 'Connecting to'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+# Define custom network for service communication
+networks:
+  sudoku-network:
+    driver: bridge

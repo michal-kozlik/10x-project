@@ -19,7 +19,12 @@ describe("SortableHeader", () => {
     const onClick = vi.fn();
 
     renderInTable(
-      <SortableHeader label="Nazwa" sortKey="name" currentSort="created_at" onClick={onClick} />,
+      <SortableHeader
+        label="Nazwa"
+        sortKey="name"
+        currentSort="created_at"
+        onClick={onClick}
+      />,
     );
 
     const header = screen.getByRole("columnheader", { name: /nazwa/i });
@@ -34,7 +39,12 @@ describe("SortableHeader", () => {
     // active asc
     const onClickAsc = vi.fn();
     const { container: c1 } = renderInTable(
-      <SortableHeader label="Name" sortKey="name" currentSort="name" onClick={onClickAsc} />,
+      <SortableHeader
+        label="Name"
+        sortKey="name"
+        currentSort="name"
+        onClick={onClickAsc}
+      />,
     );
     const headerAsc = within(c1).getByRole("columnheader", { name: /name/i });
     await user.click(headerAsc);
@@ -43,7 +53,12 @@ describe("SortableHeader", () => {
     // rerender for desc state
     const onClickDesc = vi.fn();
     const { container: c2 } = renderInTable(
-      <SortableHeader label="Name" sortKey="name" currentSort="-name" onClick={onClickDesc} />,
+      <SortableHeader
+        label="Name"
+        sortKey="name"
+        currentSort="-name"
+        onClick={onClickDesc}
+      />,
     );
     const headerDesc = within(c2).getByRole("columnheader", { name: /name/i });
     await user.click(headerDesc);
@@ -55,7 +70,12 @@ describe("SortableHeader", () => {
 
     // inactive → brak pogrubienia i brak ikony
     const { container: c1 } = renderInTable(
-      <SortableHeader label="Status" sortKey="solution" currentSort="created_at" onClick={vi.fn()} />,
+      <SortableHeader
+        label="Status"
+        sortKey="solution"
+        currentSort="created_at"
+        onClick={vi.fn()}
+      />,
     );
     const inactive = within(c1).getByRole("columnheader", { name: /status/i });
     expect(inactive).not.toHaveClass("font-semibold");
@@ -63,7 +83,12 @@ describe("SortableHeader", () => {
 
     // active asc → pogrubienie + ikona
     const { container: c2 } = renderInTable(
-      <SortableHeader label="Status" sortKey="solution" currentSort="solution" onClick={vi.fn()} />,
+      <SortableHeader
+        label="Status"
+        sortKey="solution"
+        currentSort="solution"
+        onClick={vi.fn()}
+      />,
     );
     const activeAsc = within(c2).getByRole("columnheader", { name: /status/i });
     expect(activeAsc).toHaveClass("font-semibold");
@@ -71,9 +96,16 @@ describe("SortableHeader", () => {
 
     // active desc → nadal pogrubienie + ikona
     const { container: c3 } = renderInTable(
-      <SortableHeader label="Status" sortKey="solution" currentSort="-solution" onClick={vi.fn()} />,
+      <SortableHeader
+        label="Status"
+        sortKey="solution"
+        currentSort="-solution"
+        onClick={vi.fn()}
+      />,
     );
-    const activeDesc = within(c3).getByRole("columnheader", { name: /status/i });
+    const activeDesc = within(c3).getByRole("columnheader", {
+      name: /status/i,
+    });
     expect(activeDesc).toHaveClass("font-semibold");
     expect(activeDesc.querySelector("svg")).not.toBeNull();
 

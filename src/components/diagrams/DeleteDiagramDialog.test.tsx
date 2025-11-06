@@ -77,12 +77,12 @@ describe("DeleteDiagramDialog", () => {
     const confirmAgain = await screen.findByRole("button", {
       name: new RegExp(`confirm deletion of diagram ${diagram.name}`, "i"),
     });
-  await userEvent.click(confirmAgain);
-  // Ponowne potwierdzenie podczas trwania poprzedniej operacji jest zablokowane
-  expect(onConfirm).toHaveBeenCalledTimes(1);
+    await userEvent.click(confirmAgain);
+    // Ponowne potwierdzenie podczas trwania poprzedniej operacji jest zablokowane
+    expect(onConfirm).toHaveBeenCalledTimes(1);
 
     // Finiszujemy pierwszą obietnicę, żeby nie zostawiać wiszących tasków
-  resolve();
+    resolve();
   });
 
   it("nie otwiera dialogu klawiszem Delete, gdy disabled=true", async () => {

@@ -1,5 +1,4 @@
 import type {
-  Database,
   Tables as _Tables,
   TablesInsert as _TablesInsert,
   TablesUpdate as _TablesUpdate,

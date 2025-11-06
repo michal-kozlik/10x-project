@@ -17,12 +17,19 @@ pnpm-debug.log*
 .env
 .env.test
 .env.production
+.env.docker
 
 # macOS-specific files
 .DS_Store
 
 # jetbrains setting folder
 .idea/
+
+# test coverage
+coverage/
+test-results/
+playwright-report/
+backend-coverage/
 
 # .NET backend
 bin/

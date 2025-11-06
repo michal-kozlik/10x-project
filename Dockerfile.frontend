@@ -1,0 +1,100 @@
+# Multi-stage build for Astro + React frontend
+# Base image: Node.js 22 on Alpine for smaller footprint
+FROM node:22-alpine AS base
+
+# Set npm to use production mode by default
+ENV NODE_ENV=production
+
+# ============================================
+# Stage 1: Dependencies
+# Separate stage for installing dependencies to leverage Docker layer caching
+# ============================================
+FROM base AS deps
+
+WORKDIR /app
+
+# Install build dependencies required for native modules on Alpine
+RUN apk add --no-cache python3 make g++
+
+# Copy package files first for optimal caching
+# Only re-run install if these files change
+COPY package.json package-lock.json* ./
+
+# Install ALL dependencies (including devDependencies)
+# We need devDependencies for the build stage (e.g., TypeScript, Astro CLI)
+RUN npm ci
+
+# ============================================
+# Stage 2: Builder
+# Build the Astro application for production
+# ============================================
+FROM base AS builder
+
+WORKDIR /app
+
+# Install build dependencies required for native modules on Alpine
+RUN apk add --no-cache python3 make g++
+
+# Copy package files and install dependencies directly in builder
+# Use npm install instead of npm ci to work around npm bug with optional dependencies
+# https://github.com/npm/cli/issues/4828
+COPY package.json ./
+RUN npm install
+
+# Copy application source code
+COPY . .
+
+# Build arguments for Supabase configuration
+# These are required at build time for Vite/Astro
+ARG PUBLIC_SUPABASE_URL
+ARG PUBLIC_SUPABASE_KEY
+
+# Set environment variables for the build
+ENV NODE_ENV=production
+ENV PUBLIC_SUPABASE_URL=$PUBLIC_SUPABASE_URL
+ENV PUBLIC_SUPABASE_KEY=$PUBLIC_SUPABASE_KEY
+
+# Build the application in production mode
+# This creates optimized output in ./dist
+RUN npm run build
+
+# ============================================
+# Stage 3: Runner
+# Final production image with minimal size
+# ============================================
+FROM base AS runner
+
+WORKDIR /app
+
+# Set production environment
+ENV NODE_ENV=production
+
+# Copy only production dependencies
+# Re-install with --omit=dev flag to exclude devDependencies
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Copy any necessary static files
+COPY --from=builder /app/public ./public
+
+# Expose port 8080 as per Docker best practices
+# Astro will be configured to listen on this port via environment variable
+EXPOSE 8080
+
+# Document expected environment variables (for reference only)
+# These must be provided at runtime via -e flag:
+# - HOST=0.0.0.0 (bind to all interfaces)
+# - PORT=8080 (listen on Docker-standard port)
+# - SUPABASE_URL (Supabase project URL)
+# - SUPABASE_ANON_KEY (Supabase anonymous key)
+# - API_BASE_URL (Backend API URL, e.g., http://backend:8080)
+
+# Set default HOST and PORT
+ENV HOST=0.0.0.0
+ENV PORT=8080
+
+# Start the Astro Node.js server in standalone mode
+CMD ["node", "./dist/server/entry.mjs"]

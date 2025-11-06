@@ -116,7 +116,7 @@ export async function logout(): Promise<void> {
   try {
     const { error } = await supabaseClient.auth.signOut();
     if (error) throw error;
-  } catch (error) {
+  } catch {
     throw new Error(getAuthErrorMessage("auth/network-request-failed"));
   }
 }

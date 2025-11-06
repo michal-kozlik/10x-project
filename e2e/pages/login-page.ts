@@ -112,7 +112,7 @@ export class LoginPage extends BasePage {
    * @param password - The password
    * @param rememberMe - Whether to check "Remember me" (default: true)
    */
-  async login(email: string, password: string, rememberMe: boolean = true) {
+  async login(email: string, password: string, rememberMe = true) {
     await this.fillEmail(email);
     await this.fillPassword(password);
     await this.setRememberMe(rememberMe);
@@ -151,21 +151,21 @@ export class LoginPage extends BasePage {
    * Get the text of the email error message
    */
   async getEmailErrorText(): Promise<string> {
-    return await this.emailError.textContent() || "";
+    return (await this.emailError.textContent()) || "";
   }
 
   /**
    * Get the text of the password error message
    */
   async getPasswordErrorText(): Promise<string> {
-    return await this.passwordError.textContent() || "";
+    return (await this.passwordError.textContent()) || "";
   }
 
   /**
    * Get the text of the server error message
    */
   async getServerErrorText(): Promise<string> {
-    return await this.serverError.textContent() || "";
+    return (await this.serverError.textContent()) || "";
   }
 
   /**
@@ -179,7 +179,7 @@ export class LoginPage extends BasePage {
    * Wait for navigation after successful login
    * @param expectedUrl - The expected URL after login (default: /app)
    */
-  async waitForSuccessfulLogin(expectedUrl: string = "/app") {
+  async waitForSuccessfulLogin(expectedUrl = "/app") {
     await this.page.waitForURL(expectedUrl);
   }
 }

@@ -21,7 +21,7 @@ const auth = defineMiddleware(async (context, next) => {
 
     context.locals.session = session;
     context.locals.user = session?.user ?? null;
-  } catch (error) {
+  } catch {
     // Failed to get session - clear locals to ensure we don't leak state
     context.locals.session = null;
     context.locals.user = null;
