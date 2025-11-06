@@ -9,7 +9,9 @@ import node from "@astrojs/node";
 // Use environment variable for backend URL
 // Docker: http://backend:8080 (internal container network)
 // Dev: http://localhost:5149 (host machine)
-const backendUrl = process.env.BACKEND_URL || "http://localhost:5149";
+
+const backendUrl =
+  globalThis.process?.env?.BACKEND_URL ?? "http://localhost:5149";
 
 // https://astro.build/config
 export default defineConfig({
