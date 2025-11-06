@@ -44,6 +44,7 @@ services:
       args:
         # Pass Supabase config as build arguments
         # Required at build time for Vite/Astro to inline these values
+        # Use host.docker.internal to reach host machine's Supabase from container
         PUBLIC_SUPABASE_URL: ${PUBLIC_SUPABASE_URL}
         PUBLIC_SUPABASE_KEY: ${PUBLIC_SUPABASE_KEY}
     image: ghcr.io/michal-kozlik/sudoku-solver:frontend-latest
@@ -60,6 +61,8 @@ services:
       - HOST=0.0.0.0
       - PORT=8080
       - NODE_ENV=production
+      # Backend URL for API proxy (uses Docker network)
+      - BACKEND_URL=http://backend:8080
     networks:
       - sudoku-network
     depends_on:
