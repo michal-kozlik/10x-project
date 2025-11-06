@@ -45,8 +45,9 @@ services:
         # Pass Supabase config as build arguments
         # Required at build time for Vite/Astro to inline these values
         # Use host.docker.internal to reach host machine's Supabase from container
-        PUBLIC_SUPABASE_URL: ${PUBLIC_SUPABASE_URL}
-        PUBLIC_SUPABASE_KEY: ${PUBLIC_SUPABASE_KEY}
+        # NOTE: This is the standard Supabase local development key (public, safe to commit)
+        PUBLIC_SUPABASE_URL: http://host.docker.internal:54321
+        PUBLIC_SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
     image: ghcr.io/michal-kozlik/sudoku-solver:frontend-latest
     container_name: sudoku-frontend
     restart: unless-stopped
