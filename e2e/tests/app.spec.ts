@@ -1,11 +1,21 @@
 import { test, expect } from "@playwright/test";
 import { AppPage } from "../pages/app-page";
+import { LoginPage } from "../pages/login-page";
 
 test.describe("App Dashboard", () => {
   let appPage: AppPage;
+  let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
     appPage = new AppPage(page);
+    loginPage = new LoginPage(page);
+
+    // Authenticate before each test
+    const email = process.env.E2E_USERNAME || "";
+    const password = process.env.E2E_PASSWORD || "";
+    await loginPage.navigateToLogin();
+    await loginPage.login(email, password);
+    await page.waitForURL("/app");
   });
 
   test("should display dashboard after navigation", async () => {
