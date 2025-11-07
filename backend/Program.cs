@@ -1,8 +1,59 @@
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Configure JWT Authentication
+var jwtSecret = builder.Configuration["Jwt:Secret"] 
+    ?? throw new InvalidOperationException("JWT Secret is not configured");
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] 
+    ?? throw new InvalidOperationException("JWT Issuer is not configured");
+var jwtAudience = builder.Configuration["Jwt:Audience"] 
+    ?? throw new InvalidOperationException("JWT Audience is not configured");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var isDevelopment = builder.Environment.IsDevelopment();
+        
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = !isDevelopment,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = !isDevelopment,
+            ValidIssuers = new[] { jwtIssuer, "supabase", "supabase-demo" },
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+            NameClaimType = "sub"
+        };
+        
+        // In development, skip signature validation to work with any Supabase JWT
+        if (isDevelopment)
+        {
+            options.TokenValidationParameters.RequireSignedTokens = false;
+        }
+        
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                if (context.Exception != null)
+                {
+                    context.HttpContext.RequestServices
+                        .GetRequiredService<ILogger<Program>>()
+                        .LogWarning(context.Exception, "JWT Authentication failed");
+                }
+                return Task.CompletedTask;
+            }
+        };
+    });
+
 builder.Services.AddAuthorization();
 
 // App services
@@ -18,13 +69,53 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Add authentication and authorization middleware
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Helper method to extract user ID from JWT token
+static string? GetUserIdFromContext(HttpContext context, ILogger logger)
+{
+    // Log all claims for debugging
+    if (context.User.Identity?.IsAuthenticated == true)
+    {
+        logger.LogInformation("User is authenticated. Claims:");
+        foreach (var claim in context.User.Claims)
+        {
+            logger.LogInformation("  {Type}: {Value}", claim.Type, claim.Value);
+        }
+    }
+    else
+    {
+        logger.LogWarning("User is not authenticated");
+    }
+    
+    var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
+                 ?? context.User.FindFirst("sub")?.Value;
+    
+    if (userId != null)
+    {
+        logger.LogInformation("Extracted user ID: {UserId}", userId);
+    }
+    else
+    {
+        logger.LogWarning("Could not extract user ID from token");
+    }
+    
+    return userId;
+}
+
 app.MapPost("/diagrams", async (
     HttpRequest request,
+    HttpContext context,
     SudokuApi.Services.DiagramService service,
+    ILogger<Program> logger,
     CancellationToken cancellationToken) =>
 {
-    // TODO: Replace with real auth extraction; public scope for now
-    var userId = "public";
+    // Extract user ID from JWT token
+    var userId = GetUserIdFromContext(context, logger);
+    if (string.IsNullOrEmpty(userId))
+        return Results.Unauthorized();
 
     try
     {
@@ -63,11 +154,15 @@ app.MapPost("/diagrams", async (
 app.MapPut("/diagrams/{id:long}", async (
     long id,
     HttpRequest request,
+    HttpContext context,
     SudokuApi.Services.DiagramService service,
+    ILogger<Program> logger,
     CancellationToken cancellationToken) =>
 {
-    // TODO: Replace with real auth extraction; public scope for now
-    var userId = "public";
+    // Extract user ID from JWT token
+    var userId = GetUserIdFromContext(context, logger);
+    if (string.IsNullOrEmpty(userId))
+        return Results.Unauthorized();
 
     try
     {
@@ -113,11 +208,15 @@ app.MapPut("/diagrams/{id:long}", async (
 
 app.MapGet("/diagrams", async (
     HttpRequest request,
+    HttpContext context,
     SudokuApi.Services.DiagramService service,
+    ILogger<Program> logger,
     CancellationToken cancellationToken) =>
 {
-    // Public mode: no authentication required. Use a shared scope identifier.
-    var userId = "public";
+    // Extract user ID from JWT token
+    var userId = GetUserIdFromContext(context, logger);
+    if (string.IsNullOrEmpty(userId))
+        return Results.Unauthorized();
 
     int? page = null;
     int? limit = null;
@@ -171,11 +270,15 @@ app.MapGet("/diagrams", async (
 app.MapPost("/diagrams/{id:long}/solve", async (
     long id,
     HttpRequest request,
+    HttpContext context,
     SudokuApi.Services.DiagramService service,
+    ILogger<Program> logger,
     CancellationToken cancellationToken) =>
 {
-    // TODO: Replace with real auth extraction; public scope for now
-    var userId = "public";
+    // Extract user ID from JWT token
+    var userId = GetUserIdFromContext(context, logger);
+    if (string.IsNullOrEmpty(userId))
+        return Results.Unauthorized();
 
     if (id <= 0)
         return Results.BadRequest(new { code = "VALIDATION_ERROR", message = "id must be a positive integer", details = (string?)null });
@@ -219,11 +322,15 @@ app.MapPost("/diagrams/{id:long}/solve", async (
 
 app.MapDelete("/diagrams/{id:long}", async (
     long id,
+    HttpContext context,
     SudokuApi.Services.DiagramService service,
+    ILogger<Program> logger,
     CancellationToken cancellationToken) =>
 {
-    // TODO: Replace with real auth extraction; public scope for now
-    var userId = "public";
+    // Extract user ID from JWT token
+    var userId = GetUserIdFromContext(context, logger);
+    if (string.IsNullOrEmpty(userId))
+        return Results.Unauthorized();
 
     try
     {

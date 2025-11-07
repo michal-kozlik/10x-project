@@ -17,6 +17,7 @@ namespace SudokuApi.Repositories
 
         Task<bool> UpdateSolutionAsync(
             long id,
+            string userId,
             string solution,
             CancellationToken cancellationToken);
             
