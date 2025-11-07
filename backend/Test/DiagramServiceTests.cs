@@ -273,7 +273,7 @@ public class DiagramServiceTests
                       .ReturnsAsync(ValidDiagramRecord);
         _solverMock.Setup(s => s.Solve(ValidDefinition, _cancellationToken))
                    .Returns(solution);
-        _repositoryMock.Setup(r => r.UpdateSolutionAsync(1, solution, _cancellationToken))
+        _repositoryMock.Setup(r => r.UpdateSolutionAsync(1, ValidUserId, solution, _cancellationToken))
                       .ReturnsAsync(true);
         _repositoryMock.Setup(r => r.GetByIdForUserAsync(1, ValidUserId, _cancellationToken))
                       .ReturnsAsync(solvedDiagram);
@@ -284,7 +284,7 @@ public class DiagramServiceTests
         // Assert
         result.Should().BeEquivalentTo(solvedDiagram);
         _solverMock.Verify(s => s.Solve(ValidDefinition, _cancellationToken), Times.Once);
-        _repositoryMock.Verify(r => r.UpdateSolutionAsync(1, solution, _cancellationToken), Times.Once);
+        _repositoryMock.Verify(r => r.UpdateSolutionAsync(1, ValidUserId, solution, _cancellationToken), Times.Once);
     }
 
     [Theory]

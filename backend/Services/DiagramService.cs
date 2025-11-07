@@ -192,7 +192,7 @@ namespace SudokuApi.Services
                 throw new ValidationException($"solver failed: {ex.Message}");
             }
 
-            var updated = await _repository.UpdateSolutionAsync(diagramId, solution, cancellationToken);
+            var updated = await _repository.UpdateSolutionAsync(diagramId, userId, solution, cancellationToken);
             if (!updated)
                 throw new ConflictException("Failed to update solution");
 

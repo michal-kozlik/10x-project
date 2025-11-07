@@ -27,7 +27,10 @@ namespace SudokuApi.Repositories
             var whereClauses = new List<string>();
             var parameters = new List<NpgsqlParameter>();
 
-            // If you later add auth, you can filter user_id here. For now, show all diagrams.
+            // Filter by user_id
+            whereClauses.Add("user_id = @userId");
+            parameters.Add(new NpgsqlParameter("@userId", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = Guid.Parse(userId) });
+
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 whereClauses.Add("name ILIKE @filter");
@@ -94,11 +97,14 @@ namespace SudokuApi.Repositories
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync(cancellationToken);
 
-            // TODO: When per-user ownership exists, filter by userId column.
-            var sql = @"SELECT id, name, definition, solution, created_at FROM diagrams WHERE id = @id LIMIT 1;";
+            var sql = @"SELECT id, name, definition, solution, created_at 
+                        FROM diagrams 
+                        WHERE id = @id AND user_id = @userId 
+                        LIMIT 1;";
 
             await using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = Guid.Parse(userId) });
 
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
             if (await reader.ReadAsync(cancellationToken))
@@ -119,17 +125,19 @@ namespace SudokuApi.Repositories
 
         public async Task<bool> UpdateSolutionAsync(
             long id,
+            string userId,
             string solution,
             CancellationToken cancellationToken)
         {
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync(cancellationToken);
 
-            var sql = @"UPDATE diagrams SET solution = @solution WHERE id = @id;";
+            var sql = @"UPDATE diagrams SET solution = @solution WHERE id = @id AND user_id = @userId;";
 
             await using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.Add(new NpgsqlParameter("@solution", NpgsqlTypes.NpgsqlDbType.Text) { Value = solution });
             cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = Guid.Parse(userId) });
 
             var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
             return affected > 0;
@@ -145,11 +153,12 @@ namespace SudokuApi.Repositories
             await conn.OpenAsync(cancellationToken);
 
             var sql = @"
-                INSERT INTO diagrams (name, definition, created_at)
-                VALUES (@name, @definition, NOW())
+                INSERT INTO diagrams (user_id, name, definition, created_at)
+                VALUES (@userId, @name, @definition, NOW())
                 RETURNING id, name, definition, solution, created_at;";
 
             await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = Guid.Parse(userId) });
             cmd.Parameters.Add(new NpgsqlParameter("@name", NpgsqlTypes.NpgsqlDbType.Text) { Value = name });
             cmd.Parameters.Add(new NpgsqlParameter("@definition", NpgsqlTypes.NpgsqlDbType.Text) { Value = definition });
 
@@ -183,12 +192,13 @@ namespace SudokuApi.Repositories
             var sql = @"
                 UPDATE diagrams 
                 SET name = @name, definition = @definition, solution = NULL 
-                WHERE id = @id;";
+                WHERE id = @id AND user_id = @userId;";
 
             await using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.Add(new NpgsqlParameter("@name", NpgsqlTypes.NpgsqlDbType.Text) { Value = name });
             cmd.Parameters.Add(new NpgsqlParameter("@definition", NpgsqlTypes.NpgsqlDbType.Text) { Value = definition });
             cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = Guid.Parse(userId) });
 
             var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
             return affected > 0;
@@ -202,11 +212,11 @@ namespace SudokuApi.Repositories
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync(cancellationToken);
 
-            // TODO: When per-user ownership exists, filter by userId column.
-            var sql = @"DELETE FROM diagrams WHERE id = @id;";
+            var sql = @"DELETE FROM diagrams WHERE id = @id AND user_id = @userId;";
 
             await using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.Add(new NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer) { Value = (int)id });
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = Guid.Parse(userId) });
 
             var affected = await cmd.ExecuteNonQueryAsync(cancellationToken);
             return affected > 0;
