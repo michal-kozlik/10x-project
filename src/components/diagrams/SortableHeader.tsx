@@ -6,6 +6,7 @@ interface SortableHeaderProps {
   sortKey: string;
   currentSort?: string;
   onClick: (sortKey: string) => void;
+  className?: string;
 }
 
 export function SortableHeader({
@@ -13,6 +14,7 @@ export function SortableHeader({
   sortKey,
   currentSort = "",
   onClick,
+  className = "",
 }: SortableHeaderProps) {
   const isActive = currentSort?.replace(/^-/, "") === sortKey;
   const isDesc = currentSort?.startsWith("-") ?? false;
@@ -22,6 +24,7 @@ export function SortableHeader({
       onClick={() => onClick(isActive && !isDesc ? `-${sortKey}` : sortKey)}
       className={cn(
         "px-1 py-2 text-left cursor-pointer select-none",
+        className,
         isActive && "font-semibold",
       )}
     >
