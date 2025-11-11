@@ -58,30 +58,35 @@ export function DiagramsTable({
               sortKey="name"
               currentSort={sortBy}
               onClick={onSort}
+              className="border-r"
             />
             <SortableHeader
               label="Utworzono"
               sortKey="created_at"
               currentSort={sortBy}
               onClick={onSort}
+              className="border-r"
             />
             <SortableHeader
               label="Zaktualiz."
               sortKey="updated_at"
               currentSort={sortBy}
               onClick={onSort}
+              className="border-r"
             />
             <SortableHeader
               label="Definicja"
               sortKey="definition"
               currentSort={sortBy}
               onClick={onSort}
+              className="border-r"
             />
             <SortableHeader
               label="Status"
               sortKey="solution"
               currentSort={sortBy}
               onClick={onSort}
+              className="border-r"
             />
             <th className="w-10" />
           </tr>
@@ -97,17 +102,19 @@ export function DiagramsTable({
                   : "hover:bg-muted/50 cursor-pointer"
               }`}
             >
-              <td className="px-1 py-2">{diagram.name}</td>
-              <td className="px-1 py-2">{formatDate(diagram.created_at)}</td>
-              <td className="px-1 py-2">
+              <td className="border-r px-1 py-2">{diagram.name}</td>
+              <td className="border-r px-1 py-2">
+                {formatDate(diagram.created_at)}
+              </td>
+              <td className="border-r px-1 py-2">
                 {diagram.updated_at
                   ? formatDate(diagram.updated_at)
                   : formatDate(diagram.created_at)}
               </td>
-              <td className="px-1 py-2 font-mono whitespace-pre">
+              <td className="border-r px-1 py-2 font-mono whitespace-pre">
                 {diagram.definition.slice(0, 27)}...
               </td>
-              <td className="px-1 py-2">
+              <td className="border-r px-1 py-2">
                 {diagram.solution ? (
                   <span title="Rozwiązane" className="text-green-500">
                     ✓
