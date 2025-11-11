@@ -21,15 +21,15 @@ export function PrimaryActions({
     <div className="flex justify-between gap-2">
       <div>
         <Button variant="outline" onClick={onClear}>
-          Clear
+          Czyść
         </Button>
       </div>
       <div className="space-x-2">
         <Button variant="secondary" onClick={onSolve} disabled={!canSolve}>
-          Solve
+          Rozwiąż
         </Button>
         <Button onClick={onSave} disabled={!canSave || !isSaveEnabled}>
-          Save
+          Zapisz
         </Button>
       </div>
     </div>

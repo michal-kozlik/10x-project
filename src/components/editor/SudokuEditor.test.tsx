@@ -27,11 +27,11 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    const nameInput = screen.getByLabelText(/name/i) as HTMLInputElement;
+    const nameInput = screen.getByLabelText(/nazwa/i) as HTMLInputElement;
     await user.clear(nameInput);
     await user.type(nameInput, "  Foo  ");
 
-    const save = screen.getByRole("button", { name: /save/i });
+    const save = screen.getByRole("button", { name: /zapisz/i });
     await user.click(save);
 
     expect(onSave).toHaveBeenCalledWith({
@@ -55,7 +55,7 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    let solve = screen.getByRole("button", { name: /solve/i });
+    let solve = screen.getByRole("button", { name: /rozwiąż/i });
     expect(solve).toBeDisabled();
 
     rerender(
@@ -69,7 +69,7 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    solve = screen.getByRole("button", { name: /solve/i });
+    solve = screen.getByRole("button", { name: /rozwiąż/i });
     expect(solve).toBeEnabled();
     await user.click(solve);
     expect(onSolve).toHaveBeenCalledWith(baseDiagram.id);
@@ -86,7 +86,7 @@ describe("SudokuEditor", () => {
         onClear={vi.fn()}
       />,
     );
-    let save = screen.getByRole("button", { name: /save/i });
+    let save = screen.getByRole("button", { name: /zapisz/i });
     expect(save).toBeDisabled();
 
     rerender(
@@ -99,7 +99,7 @@ describe("SudokuEditor", () => {
         onClear={vi.fn()}
       />,
     );
-    save = screen.getByRole("button", { name: /save/i });
+    save = screen.getByRole("button", { name: /zapisz/i });
     expect(save).toBeDisabled();
   });
 
@@ -124,12 +124,12 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    const nameInput = screen.getByLabelText(/name/i) as HTMLInputElement;
+    const nameInput = screen.getByLabelText(/nazwa/i) as HTMLInputElement;
     await user.type(nameInput, "X");
     expect(onContentChange).toHaveBeenLastCalledWith("AX", "B".repeat(81));
 
     const definition = screen.getByLabelText(
-      /definition/i,
+      /definicja/i,
     ) as HTMLTextAreaElement;
     await user.type(definition, "1");
     // SudokuTextarea removes newlines on emit, but here we only typed one char append
@@ -157,7 +157,7 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    expect((screen.getByLabelText(/name/i) as HTMLInputElement).value).toBe(
+    expect((screen.getByLabelText(/nazwa/i) as HTMLInputElement).value).toBe(
       "Old",
     );
 
@@ -178,7 +178,7 @@ describe("SudokuEditor", () => {
       />,
     );
 
-    expect((screen.getByLabelText(/name/i) as HTMLInputElement).value).toBe(
+    expect((screen.getByLabelText(/nazwa/i) as HTMLInputElement).value).toBe(
       "New",
     );
   });

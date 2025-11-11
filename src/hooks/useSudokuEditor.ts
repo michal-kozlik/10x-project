@@ -6,6 +6,7 @@ import {
   dispatchGlobalEvent,
 } from "../lib/events";
 import { showToast } from "../lib/toast";
+import { validateSudokuDefinition } from "../lib/sudoku-validator";
 
 interface EditorState {
   diagram: DiagramDTO | null;
@@ -43,10 +44,14 @@ export function useSudokuEditor() {
 
   const updateContent = useCallback(
     (name: string, definition: string) => {
+      // Validate the definition
+      const validationErrors = validateSudokuDefinition(definition);
+
       if (!editorState.diagram) {
         setEditorState((prev) => ({
           ...prev,
           isDirty: definition !== "",
+          validationErrors,
         }));
       } else {
         setEditorState((prev) => ({
@@ -54,6 +59,7 @@ export function useSudokuEditor() {
           isDirty:
             definition !== prev.diagram?.definition ||
             (name !== prev.diagram?.name && prev.diagram.name !== null),
+          validationErrors,
         }));
       }
     },

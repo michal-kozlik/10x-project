@@ -57,24 +57,26 @@ export function SudokuEditor({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{diagram ? "Edit Diagram" : "Create New Diagram"}</CardTitle>
+        <CardTitle>
+          {diagram ? "Edytuj diagram" : "Utwórz nowy diagram"}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <label htmlFor="name" className="text-sm font-medium">
-            Name
+            Nazwa
           </label>
           <Input
             id="name"
             value={name}
             onChange={handleNameChange}
-            placeholder="Enter diagram name"
+            placeholder="Wprowadź nazwę diagramu"
           />
         </div>
 
         <div className="space-y-2">
           <label htmlFor="definition" className="text-sm font-medium">
-            Definition
+            Definicja (9x9)
           </label>
           <SudokuTextarea
             id="definition"
