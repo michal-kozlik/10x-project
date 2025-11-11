@@ -35,7 +35,7 @@ export function DiagramsTable({
   if (isLoading) {
     return (
       <div className="text-center py-4" role="status">
-        Loading...
+        Ładowanie...
       </div>
     );
   }

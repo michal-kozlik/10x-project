@@ -44,14 +44,14 @@ export function useDiagrams() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch diagrams");
+        throw new Error("Błąd podczas pobierania diagramów");
       }
 
       const data: ListDiagramsResponseDTO = await response.json();
       setDiagrams(data.data);
       setPagination(data.pagination);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "An error occurred";
+      const message = err instanceof Error ? err.message : "Wystąpił błąd";
       setError(message);
       showToast.error(message);
     } finally {
@@ -95,17 +95,17 @@ export function useDiagrams() {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to delete diagram");
+          throw new Error("Błąd podczas usuwania diagramu");
         }
 
-        showToast.success("Diagram deleted successfully");
+        showToast.success("Diagram usunięty pomyślnie");
         // Refresh the diagrams list
         fetchDiagrams(tableState);
         // If this was the selected diagram, clear the selection
         dispatchGlobalEvent(Events.DIAGRAM_SELECT, null);
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Failed to delete diagram";
+          err instanceof Error ? err.message : "Błąd podczas usuwania diagramu";
         setError(message);
         showToast.error(message);
         throw err;

@@ -46,7 +46,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     });
   } catch {
     return new Response(
-      JSON.stringify({ error: "Failed to fetch diagram from backend" }),
+      JSON.stringify({ error: "Błąd podczas pobierania diagramu" }),
       {
         status: 502,
         headers: {
@@ -105,7 +105,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     });
   } catch {
     return new Response(
-      JSON.stringify({ error: "Failed to update diagram on backend" }),
+      JSON.stringify({ error: "Błąd podczas aktualizacji diagramu" }),
       {
         status: 502,
         headers: {
@@ -165,7 +165,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     });
   } catch {
     return new Response(
-      JSON.stringify({ error: "Failed to delete diagram on backend" }),
+      JSON.stringify({ error: "Błąd podczas usuwania diagramu" }),
       {
         status: 502,
         headers: {

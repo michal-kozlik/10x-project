@@ -38,7 +38,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     });
   } catch {
     return new Response(
-      JSON.stringify({ error: "Failed to fetch diagrams from backend" }),
+      JSON.stringify({ error: "Błąd podczas pobierania diagramów" }),
       {
         status: 502,
         headers: {
@@ -86,7 +86,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   } catch {
     return new Response(
-      JSON.stringify({ error: "Failed to create diagram on backend" }),
+      JSON.stringify({ error: "Błąd podczas tworzenia diagramu" }),
       {
         status: 502,
         headers: {

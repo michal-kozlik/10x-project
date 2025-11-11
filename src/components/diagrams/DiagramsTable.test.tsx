@@ -38,7 +38,7 @@ function makeDiagram(partial: Partial<DiagramDTO> = {}): DiagramDTO {
 }
 
 describe("DiagramsTable", () => {
-  it("pokazuje Loading... gdy isLoading=true", () => {
+  it("pokazuje Ładowanie... gdy isLoading=true", () => {
     render(
       <DiagramsTable
         diagrams={[]}
@@ -49,7 +49,7 @@ describe("DiagramsTable", () => {
         sortBy=""
       />,
     );
-    expect(screen.getByRole("status")).toHaveTextContent(/loading/i);
+    expect(screen.getByRole("status")).toHaveTextContent(/Ładowanie/i);
   });
 
   it("pokazuje komunikat pustej listy, gdy brak danych", () => {
