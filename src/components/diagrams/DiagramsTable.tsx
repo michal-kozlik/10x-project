@@ -105,7 +105,7 @@ export function DiagramsTable({
                   : formatDate(diagram.created_at)}
               </td>
               <td className="px-1 py-2 font-mono whitespace-pre">
-                {diagram.definition}
+                {diagram.definition.slice(0, 27)}...
               </td>
               <td className="px-1 py-2">
                 {diagram.solution ? (

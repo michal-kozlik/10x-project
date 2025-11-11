@@ -9,10 +9,10 @@ import EditorPanel from "../components/editor/EditorPanel";
   <SessionGuard client:load>
     <div class="flex h-screen flex-col overflow-hidden" data-testid="app-dashboard">
       <div class="flex flex-1 overflow-hidden">
-        <div class="w-4/5 overflow-y-auto border-r" data-testid="diagrams-panel-container">
+        <div class="w-5/7 overflow-y-auto border-r" data-testid="diagrams-panel-container">
           <DiagramsPanel client:load />
         </div>
-        <div class="w-1/5 overflow-y-auto" data-testid="editor-panel-container">
+        <div class="w-2/7 overflow-y-auto" data-testid="editor-panel-container">
           <EditorPanel client:load />
         </div>
       </div>
