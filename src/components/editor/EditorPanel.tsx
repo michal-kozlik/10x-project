@@ -11,6 +11,7 @@ export default function EditorPanel() {
     onSave,
     onSolve,
     onClear,
+    onExample,
     updateContent,
   } = useSudokuEditor();
 
@@ -27,6 +28,7 @@ export default function EditorPanel() {
         onSave={onSave}
         onSolve={onSolve}
         onClear={onClear}
+        onExample={onExample}
         onContentChange={handleContentChange}
       />
       {diagram?.solution && <SolvedDiagramView solution={diagram.solution} />}

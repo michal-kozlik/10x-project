@@ -24,6 +24,7 @@ describe("SudokuEditor", () => {
         onSave={onSave}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -52,6 +53,7 @@ describe("SudokuEditor", () => {
         onSave={vi.fn()}
         onSolve={onSolve}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -66,6 +68,7 @@ describe("SudokuEditor", () => {
         onSave={vi.fn()}
         onSolve={onSolve}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -84,6 +87,7 @@ describe("SudokuEditor", () => {
         onSave={vi.fn()}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
     let save = screen.getByRole("button", { name: /zapisz/i });
@@ -97,6 +101,7 @@ describe("SudokuEditor", () => {
         onSave={vi.fn()}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
     save = screen.getByRole("button", { name: /zapisz/i });
@@ -120,6 +125,7 @@ describe("SudokuEditor", () => {
         onSave={vi.fn()}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
         onContentChange={onContentChange}
       />,
     );
@@ -154,6 +160,7 @@ describe("SudokuEditor", () => {
         onSave={vi.fn()}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -175,6 +182,7 @@ describe("SudokuEditor", () => {
         onSave={vi.fn()}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 

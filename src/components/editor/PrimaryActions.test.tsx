@@ -16,6 +16,7 @@ describe("PrimaryActions", () => {
         onSave={vi.fn()}
         onSolve={onSolve}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -32,6 +33,7 @@ describe("PrimaryActions", () => {
         onSave={vi.fn()}
         onSolve={onSolve}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -53,6 +55,7 @@ describe("PrimaryActions", () => {
         onSave={onSave}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -69,6 +72,7 @@ describe("PrimaryActions", () => {
         onSave={onSave}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -83,6 +87,7 @@ describe("PrimaryActions", () => {
         onSave={onSave}
         onSolve={vi.fn()}
         onClear={vi.fn()}
+        onExample={vi.fn()}
       />,
     );
 
@@ -104,6 +109,7 @@ describe("PrimaryActions", () => {
         onSave={vi.fn()}
         onSolve={vi.fn()}
         onClear={onClear}
+        onExample={vi.fn()}
       />,
     );
 

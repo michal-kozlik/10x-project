@@ -13,6 +13,7 @@ interface SudokuEditorProps {
   onSave: (data: { name: string; definition: string }) => void;
   onSolve: (id: number) => void;
   onClear: () => void;
+  onExample: () => void;
   onContentChange?: (name: string, definition: string) => void;
 }
 
@@ -23,6 +24,7 @@ export function SudokuEditor({
   onSave,
   onSolve,
   onClear,
+  onExample,
   onContentChange,
 }: SudokuEditorProps) {
   const [name, setName] = useState(diagram?.name ?? "");
@@ -92,6 +94,7 @@ export function SudokuEditor({
           onSave={handleSave}
           onSolve={handleSolve}
           onClear={onClear}
+          onExample={onExample}
           isSaveEnabled={isDirty}
         />
       </CardContent>
