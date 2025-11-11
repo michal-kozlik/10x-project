@@ -129,6 +129,10 @@ export function useSudokuEditor() {
       );
 
       if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.code === "UNSOLVABLE") {
+          throw new Error("Diagram jest nierozwiązywalny");
+        }
         throw new Error("Nie udało się rozwiązać diagramu");
       }
 
