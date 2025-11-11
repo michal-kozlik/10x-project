@@ -19,7 +19,7 @@ describe("PrimaryActions", () => {
       />,
     );
 
-    const solve = screen.getByRole("button", { name: /solve/i });
+    const solve = screen.getByRole("button", { name: /rozwiąż/i });
     expect(solve).toBeDisabled();
     await user.click(solve);
     expect(onSolve).not.toHaveBeenCalled();
@@ -35,7 +35,7 @@ describe("PrimaryActions", () => {
       />,
     );
 
-    const solveEnabled = screen.getByRole("button", { name: /solve/i });
+    const solveEnabled = screen.getByRole("button", { name: /rozwiąż/i });
     expect(solveEnabled).toBeEnabled();
     await user.click(solveEnabled);
     expect(onSolve).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ describe("PrimaryActions", () => {
       />,
     );
 
-    let save = screen.getByRole("button", { name: /save/i });
+    let save = screen.getByRole("button", { name: /zapisz/i });
     expect(save).toBeDisabled();
     await user.click(save);
     expect(onSave).not.toHaveBeenCalled();
@@ -72,7 +72,7 @@ describe("PrimaryActions", () => {
       />,
     );
 
-    save = screen.getByRole("button", { name: /save/i });
+    save = screen.getByRole("button", { name: /zapisz/i });
     expect(save).toBeDisabled();
 
     rerender(
@@ -86,7 +86,7 @@ describe("PrimaryActions", () => {
       />,
     );
 
-    save = screen.getByRole("button", { name: /save/i });
+    save = screen.getByRole("button", { name: /zapisz/i });
     expect(save).toBeEnabled();
     await user.click(save);
     expect(onSave).toHaveBeenCalledTimes(1);
@@ -107,7 +107,7 @@ describe("PrimaryActions", () => {
       />,
     );
 
-    const clear = screen.getByRole("button", { name: /clear/i });
+    const clear = screen.getByRole("button", { name: /czyść/i });
     expect(clear).toBeEnabled();
     await user.click(clear);
     expect(onClear).toHaveBeenCalledTimes(1);

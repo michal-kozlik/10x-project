@@ -32,7 +32,7 @@ describe("EditorPanel", () => {
 
   it("renders SudokuEditor and not SolvedDiagramView when no solution", () => {
     render(<EditorPanel />);
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/nazwa/i)).toBeInTheDocument();
     expect(screen.queryByText(/solution/i)).not.toBeInTheDocument();
   });
 
@@ -59,14 +59,14 @@ describe("EditorPanel", () => {
     };
     render(<EditorPanel />);
 
-    const name = screen.getByLabelText(/name/i) as HTMLInputElement;
+    const name = screen.getByLabelText(/nazwa/i) as HTMLInputElement;
     await user.type(name, "X");
     expect(mockHook.updateContent).toHaveBeenLastCalledWith(
       "AX",
       "B".repeat(81),
     );
 
-    const def = screen.getByLabelText(/definition/i) as HTMLTextAreaElement;
+    const def = screen.getByLabelText(/definicja/i) as HTMLTextAreaElement;
     await user.type(def, "1\n2");
     // SudokuTextarea strips newlines on emit
     expect(mockHook.updateContent).toHaveBeenLastCalledWith(
@@ -86,7 +86,7 @@ describe("EditorPanel", () => {
     };
     render(<EditorPanel />);
 
-    const save = screen.getByRole("button", { name: /save/i });
+    const save = screen.getByRole("button", { name: /zapisz/i });
     expect(save).toBeEnabled();
     await user.click(save);
     expect(mockHook.onSave).toHaveBeenCalled();
