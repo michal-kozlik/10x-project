@@ -7,6 +7,7 @@ interface PrimaryActionsProps {
   onSave: () => void;
   onSolve: () => void;
   onClear: () => void;
+  onExample: () => void;
 }
 
 export function PrimaryActions({
@@ -16,12 +17,16 @@ export function PrimaryActions({
   onSave,
   onSolve,
   onClear,
+  onExample,
 }: PrimaryActionsProps) {
   return (
     <div className="flex justify-between gap-2">
-      <div>
+      <div className="space-x-2">
         <Button variant="outline" onClick={onClear}>
           Czyść
+        </Button>
+        <Button variant="outline" onClick={onExample}>
+          Przykład
         </Button>
       </div>
       <div className="space-x-2">

@@ -74,10 +74,12 @@ export function useSudokuEditor() {
 
       const loadingToastId = showToast.loading("Zapisywanie diagramu...");
       try {
-        const url = editorState.diagram
-          ? `/api/diagrams/${editorState.diagram.id}`
-          : "/api/diagrams";
-        const method = editorState.diagram ? "PUT" : "POST";
+        // Check if diagram has a valid ID to determine if it's a new or existing diagram
+        const isNewDiagram = !editorState.diagram?.id;
+        const url = isNewDiagram
+          ? "/api/diagrams"
+          : `/api/diagrams/${editorState.diagram?.id}`;
+        const method = isNewDiagram ? "POST" : "PUT";
 
         const response = await fetch(url, {
           method,
@@ -141,6 +143,10 @@ export function useSudokuEditor() {
         ...prev,
         diagram: solvedDiagram,
       }));
+
+      // Notify about the update to refresh the diagrams grid
+      dispatchGlobalEvent(Events.DIAGRAM_UPDATE, undefined);
+
       showToast.dismiss(loadingToastId);
       showToast.success("Diagram rozwiązany pomyślnie!");
     } catch (error) {
@@ -163,11 +169,32 @@ export function useSudokuEditor() {
     });
   }, []);
 
+  const onExample = useCallback(() => {
+    const exampleDefinition = ` 6 915 4 1 34 7 6  24       3 8  926  63       1    7 749   6 56    873435 76 219`;
+
+    // Create a temporary diagram object to populate the form
+    // Using id: undefined makes the save operation treat it as a new diagram (POST)
+    const tempDiagram = {
+      id: undefined,
+      name: "Przykładowy diagram",
+      definition: exampleDefinition,
+      solution: null,
+      created_at: new Date().toISOString(),
+    } as unknown as DiagramDTO;
+
+    setEditorState({
+      diagram: tempDiagram,
+      isDirty: true,
+      validationErrors: [],
+    });
+  }, []);
+
   return {
     ...editorState,
     onSave,
     onSolve,
     onClear,
+    onExample,
     updateContent,
   };
 }
