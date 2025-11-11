@@ -63,7 +63,7 @@ describe("DiagramsTable", () => {
         sortBy=""
       />,
     );
-    expect(screen.getByRole("status")).toHaveTextContent(/no diagrams found/i);
+    expect(screen.getByRole("status")).toHaveTextContent(/Brak diagramów/i);
   });
 
   it("wywołuje onSelect po kliknięciu wiersza oraz sortuje po kolumnie 'Utworzono'", async () => {
