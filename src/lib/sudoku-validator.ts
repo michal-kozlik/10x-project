@@ -110,7 +110,7 @@ export function validateSudokuDefinition(definition: string): string[] {
       if (duplicates.size > 0) {
         const dupList = Array.from(duplicates).join(", ");
         errors.push(
-          `W bloku 3x3 (wiersz ${boxRow + 1}, kolumna ${boxCol + 1}) powtarza się cyfra: ${dupList}.`,
+          `W bloku 3x3 (początkowy wiersz ${boxRow * 3 + 1}, początkowa kolumna ${boxCol * 3 + 1}) powtarza się cyfra: ${dupList}.`,
         );
       }
     }
