@@ -35,7 +35,7 @@ export function DiagramsTable({
   if (isLoading) {
     return (
       <div className="text-center py-4" role="status">
-        Loading...
+        Ładowanie...
       </div>
     );
   }
@@ -43,7 +43,7 @@ export function DiagramsTable({
   if (diagrams.length === 0) {
     return (
       <div className="text-center py-4" role="status">
-        No diagrams found
+        Brak diagramów
       </div>
     );
   }

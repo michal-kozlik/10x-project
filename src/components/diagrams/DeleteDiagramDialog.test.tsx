@@ -30,7 +30,7 @@ describe("DeleteDiagramDialog", () => {
     fireEvent.keyDown(trigger, { key: "Delete" });
 
     // Dialog content visible
-    expect(await screen.findByText(/delete diagram/i)).toBeInTheDocument();
+    expect(await screen.findByText(/usuń diagram/i)).toBeInTheDocument();
 
     // Close via Cancel button
     const cancel = screen.getByRole("button", { name: /cancel deletion/i });

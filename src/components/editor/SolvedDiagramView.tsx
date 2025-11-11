@@ -14,7 +14,7 @@ export function SolvedDiagramView({ solution }: SolvedDiagramViewProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Solution</CardTitle>
+        <CardTitle>Rozwiązanie</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-9 gap-px bg-muted p-2 rounded-lg">

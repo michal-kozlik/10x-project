@@ -69,27 +69,27 @@ export function DeleteDiagramDialog({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete diagram</AlertDialogTitle>
+          <AlertDialogTitle>Usuń diagram</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete &quot;{diagram.name}&quot;? This
-            action cannot be undone.
+            Czy jesteś pewien, że chcesz usunąć &quot;{diagram.name}&quot;? Ta
+            akcja jest nieodwracalna.
             {isDeleting && (
               <span className="block mt-2 text-muted-foreground" role="status">
-                Deleting...
+                Usuwanie...
               </span>
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting} aria-label="Cancel deletion">
-            Cancel
+            Anuluj
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isDeleting}
             aria-label={`Confirm deletion of diagram ${diagram.name}`}
           >
-            Delete
+            Usuń
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
