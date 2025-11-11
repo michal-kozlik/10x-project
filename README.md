@@ -1,6 +1,6 @@
-# 10x-project
+# SudokuSolver
 
-Welcome to **10x-project**, a full-stack web application that combines a powerful .NET-based Sudoku API with a sleek, modern frontend built using Astro, React, and Tailwind CSS.
+Welcome to **SudokuSolver**, a full-stack web application that combines a powerful .NET-based Sudoku API with a sleek, modern frontend built using Astro, React, and Tailwind CSS.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ Welcome to **10x-project**, a full-stack web application that combines a powerfu
 
 ## Project Description
 
-**10x-project** is a comprehensive solution designed to deliver a fast and reliable Sudoku API along with an engaging user interface. The backend, built with .NET, ensures robust performance and scalability, while the frontend leverages modern web technologies to provide an intuitive user experience.
+**SudokuSolver** is a comprehensive solution designed to deliver a fast and reliable Sudoku API along with an engaging user interface. The backend, built with .NET, ensures robust performance and scalability, while the frontend leverages modern web technologies to provide an intuitive user experience.
 
 ## Tech Stack
 
@@ -111,4 +111,4 @@ This project is currently under active development. Future updates will include 
 
 This project is licensed under the MIT License.
 
-Enjoy exploring **10x-project** and thank you for your interest!
+Enjoy exploring **SudokuSolver** and thank you for your interest!
