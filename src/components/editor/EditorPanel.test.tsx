@@ -45,7 +45,7 @@ describe("EditorPanel", () => {
       created_at: new Date().toISOString(),
     };
     render(<EditorPanel />);
-    expect(screen.getByText(/solution/i)).toBeInTheDocument();
+    expect(screen.getByText(/rozwiązanie/i)).toBeInTheDocument();
   });
 
   it("propagates content changes via updateContent (name and definition)", async () => {
