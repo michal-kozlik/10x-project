@@ -25,7 +25,7 @@ export function useSudokuEditor() {
     const handleDiagramSelect = (diagram: DiagramDTO) => {
       if (editorState.isDirty) {
         const shouldDiscard = window.confirm(
-          "You have unsaved changes. Do you want to discard them?",
+          "Masz niezapisane zmiany. Czy chcesz je odrzucić?",
         );
         if (!shouldDiscard) {
           return;
@@ -72,7 +72,7 @@ export function useSudokuEditor() {
         return;
       }
 
-      const loadingToastId = showToast.loading("Saving diagram...");
+      const loadingToastId = showToast.loading("Zapisywanie diagramu...");
       try {
         const url = editorState.diagram
           ? `/api/diagrams/${editorState.diagram.id}`
@@ -88,7 +88,7 @@ export function useSudokuEditor() {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to save diagram");
+          throw new Error("Nie udało się zapisać diagramu");
         }
 
         const savedDiagram: DiagramDTO = await response.json();
@@ -102,11 +102,13 @@ export function useSudokuEditor() {
         dispatchGlobalEvent(Events.DIAGRAM_UPDATE, undefined);
 
         showToast.dismiss(loadingToastId);
-        showToast.success("Diagram saved successfully!");
+        showToast.success("Diagram zapisany pomyślnie!");
       } catch (error) {
         showToast.dismiss(loadingToastId);
         showToast.error(
-          error instanceof Error ? error.message : "Failed to save diagram",
+          error instanceof Error
+            ? error.message
+            : "Nie udało się zapisać diagramu",
         );
         throw error;
       }
@@ -119,7 +121,7 @@ export function useSudokuEditor() {
       return;
     }
 
-    const loadingToastId = showToast.loading("Solving diagram...");
+    const loadingToastId = showToast.loading("Rozwiązywanie diagramu...");
     try {
       const response = await fetch(
         `/api/diagrams/${editorState.diagram.id}/solve`,
@@ -127,7 +129,7 @@ export function useSudokuEditor() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to solve diagram");
+        throw new Error("Nie udało się rozwiązać diagramu");
       }
 
       const solvedDiagram: DiagramDTO = await response.json();
@@ -136,12 +138,14 @@ export function useSudokuEditor() {
         diagram: solvedDiagram,
       }));
       showToast.dismiss(loadingToastId);
-      showToast.success("Diagram solved successfully!");
+      showToast.success("Diagram rozwiązany pomyślnie!");
     } catch (error) {
       // Error solving diagram - show toast and re-throw
       showToast.dismiss(loadingToastId);
       showToast.error(
-        error instanceof Error ? error.message : "Failed to solve diagram",
+        error instanceof Error
+          ? error.message
+          : "Nie udało się rozwiązać diagramu",
       );
       throw error;
     }
