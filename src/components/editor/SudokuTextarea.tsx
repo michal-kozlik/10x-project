@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Textarea } from "../ui/textarea";
 
 interface SudokuTextareaProps {
@@ -23,16 +23,29 @@ export function SudokuTextarea({ id, value, onChange }: SudokuTextareaProps) {
   // Initialize gridValue with formatted value from backend
   const [gridValue, setGridValue] = useState(() => stringToGrid(value));
 
-  // Update grid when external value changes, applying formatting
+  // Keep track of the last normalized value we emitted via onChange
+  const lastEmittedValue = useRef(gridToString(value));
+
+  // Update grid when external value changes from outside
+  // (e.g., when loading a different diagram, not from our own onChange)
   useEffect(() => {
-    setGridValue(stringToGrid(value));
+    const normalizedIncoming = gridToString(value);
+
+    // Only update if value changed from an external source
+    // (not just echoed back from our own onChange)
+    if (normalizedIncoming !== lastEmittedValue.current) {
+      setGridValue(stringToGrid(value));
+      lastEmittedValue.current = normalizedIncoming;
+    }
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     setGridValue(newValue);
     // Remove newlines when sending to backend
-    onChange(gridToString(newValue));
+    const normalized = gridToString(newValue);
+    lastEmittedValue.current = normalized;
+    onChange(normalized);
   };
 
   return (
