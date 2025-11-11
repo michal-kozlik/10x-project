@@ -143,6 +143,10 @@ export function useSudokuEditor() {
         ...prev,
         diagram: solvedDiagram,
       }));
+
+      // Notify about the update to refresh the diagrams grid
+      dispatchGlobalEvent(Events.DIAGRAM_UPDATE, undefined);
+
       showToast.dismiss(loadingToastId);
       showToast.success("Diagram rozwiązany pomyślnie!");
     } catch (error) {
