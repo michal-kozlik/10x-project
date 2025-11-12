@@ -24,6 +24,11 @@ services:
       # PostgreSQL connection string (ONLY thing backend needs)
       # Backend connects directly to Supabase PostgreSQL database
       - ConnectionStrings__SupabaseDb=${SUPABASE_CONNECTION_STRING}
+      
+      # JWT Configuration for authentication
+      - Jwt__Secret=${Jwt__Secret}
+      - Jwt__Issuer=${Jwt__Issuer}
+      - Jwt__Audience=${Jwt__Audience}
     networks:
       - sudoku-network
     healthcheck:
@@ -44,10 +49,9 @@ services:
       args:
         # Pass Supabase config as build arguments
         # Required at build time for Vite/Astro to inline these values
-        # Use host.docker.internal to reach host machine's Supabase from container
-        # NOTE: This is the standard Supabase local development key (public, safe to commit)
-        PUBLIC_SUPABASE_URL: http://host.docker.internal:54321
-        PUBLIC_SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+        # Using hosted Supabase project
+        PUBLIC_SUPABASE_URL: https://htxfsiqfmtzgrcxwoxco.supabase.co
+        PUBLIC_SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0eGZzaXFmbXR6Z3JjeHdveGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDYyMDYsImV4cCI6MjA3NjA4MjIwNn0.LQE0BgCtj5fuVuy5ZIeG-zdcQQM3idG-mfM7hIXe8QM
     image: ghcr.io/michal-kozlik/sudoku-solver:frontend-latest
     container_name: sudoku-frontend
     restart: unless-stopped
