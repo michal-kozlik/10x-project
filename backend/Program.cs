@@ -73,6 +73,17 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Health check endpoint for monitoring and load balancers
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    timestamp = DateTime.UtcNow,
+    version = "1.0.0"
+}))
+.AllowAnonymous()
+.WithName("HealthCheck")
+.WithTags("Health");
+
 // Helper method to extract user ID from JWT token
 static string? GetUserIdFromContext(HttpContext context, ILogger logger)
 {

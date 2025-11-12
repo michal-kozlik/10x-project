@@ -74,6 +74,33 @@ Welcome to **SudokuSolver**, a full-stack web application that combines a powerf
   dotnet watch run --project ./backend/SudokuApi.sln
   ```
 
+### Running with Docker (Production-like)
+
+Test the production Docker images locally:
+
+```bash
+# Build images
+docker build -f Dockerfile.frontend -t sudoku-frontend \
+  --build-arg PUBLIC_SUPABASE_URL=your-url \
+  --build-arg PUBLIC_SUPABASE_KEY=your-key \
+  .
+
+docker build -f Dockerfile.backend -t sudoku-backend .
+
+# Run with docker-compose (recommended)
+docker-compose up
+
+# Or run individually
+docker run -p 4321:8080 \
+  -e BACKEND_URL=http://localhost:5149 \
+  sudoku-frontend
+
+docker run -p 5149:8080 \
+  -e SUPABASE_CONNECTION_STRING=your-connection-string \
+  -e Jwt__Secret=your-jwt-secret \
+  sudoku-backend
+```
+
 ## Available Scripts
 
 ### Frontend (package.json)
@@ -81,6 +108,10 @@ Welcome to **SudokuSolver**, a full-stack web application that combines a powerf
 - **`dev`**: Starts the development server.
 - **`build`**: Builds the project for production.
 - **`start`**: Runs the production build.
+- **`test`**: Runs unit tests.
+- **`test:coverage`**: Runs unit tests with coverage.
+- **`test:e2e`**: Runs end-to-end tests.
+- **`lint`**: Runs ESLint.
 
 ### Backend (.NET CLI)
 
@@ -96,6 +127,35 @@ Welcome to **SudokuSolver**, a full-stack web application that combines a powerf
   ```bash
   dotnet watch run --project ./backend/SudokuApi.sln
   ```
+- **Test**:
+  ```bash
+  dotnet test ./backend/SudokuApi.sln
+  ```
+
+## Deployment
+
+This project uses GitHub Actions for continuous deployment to DigitalOcean App Platform.
+
+### Automated Deployment
+
+Every push to the `master` branch triggers an automated deployment:
+
+1. **Build Docker images** for frontend and backend
+2. **Push images** to GitHub Container Registry (GHCR)
+3. **Deploy** to DigitalOcean App Platform
+
+### Quick Start
+
+To set up deployment for your environment:
+
+1. **Configure GitHub Secrets** - See [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) for step-by-step instructions
+2. **Create DigitalOcean App** - Follow the checklist to set up your app
+3. **Push to master** - Deployment happens automatically!
+
+### Documentation
+
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Complete deployment guide with architecture details
+- **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Step-by-step setup checklist
 
 ## Project Scope
 
