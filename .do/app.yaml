@@ -1,0 +1,133 @@
+# DigitalOcean App Platform Specification
+# This file defines the application structure for deployment
+# Documentation: https://docs.digitalocean.com/products/app-platform/reference/app-spec/
+
+name: sudoku-solver
+region: fra # Frankfurt - zmień na preferowany region (nyc1, sfo2, sgp1, etc.)
+
+# Frontend Service - Astro + React application
+services:
+  - name: frontend
+    github:
+      repo: michal-kozlik/10x-project
+      branch: master
+      deploy_on_push: false # Controlled by GitHub Actions workflow
+    dockerfile_path: Dockerfile.frontend
+    
+    # Build configuration
+    build_command: echo "Using Dockerfile.frontend"
+    
+    # Container image from GitHub Container Registry
+    image:
+      registry_type: GHCR
+      registry: ghcr.io
+      repository: michal-kozlik/sudoku-solver-frontend
+      tag: latest # Will be updated by GitHub Actions to specific SHA
+    
+    # Environment variables for runtime
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: "8080"
+      - key: PUBLIC_SUPABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: ${PUBLIC_SUPABASE_URL}
+      - key: PUBLIC_SUPABASE_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ${PUBLIC_SUPABASE_KEY}
+      # Backend URL for Astro API proxy routes
+      - key: BACKEND_URL
+        value: http://backend:8080
+    
+    # HTTP configuration
+    http_port: 8080
+    
+    # Health check
+    health_check:
+      http_path: /
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+    
+    # Resource allocation
+    instance_count: 1
+    instance_size_slug: basic-xxs # 512MB RAM, 0.5 vCPU - adjust as needed
+    
+    # Routes - frontend is publicly accessible
+    routes:
+      - path: /
+
+  # Backend Service - .NET 9 API
+  - name: backend
+    github:
+      repo: michal-kozlik/10x-project
+      branch: master
+      deploy_on_push: false # Controlled by GitHub Actions workflow
+    dockerfile_path: Dockerfile.backend
+    
+    # Build configuration
+    build_command: echo "Using Dockerfile.backend"
+    
+    # Container image from GitHub Container Registry
+    image:
+      registry_type: GHCR
+      registry: ghcr.io
+      repository: michal-kozlik/sudoku-solver-backend
+      tag: latest # Will be updated by GitHub Actions to specific SHA
+    
+    # Environment variables for runtime
+    envs:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:8080
+      # Supabase PostgreSQL connection
+      - key: SUPABASE_CONNECTION_STRING
+        scope: RUN_TIME
+        type: SECRET
+        value: ${SUPABASE_CONNECTION_STRING}
+      # JWT Configuration
+      - key: Jwt__Secret
+        scope: RUN_TIME
+        type: SECRET
+        value: ${JWT_SECRET}
+      - key: Jwt__Issuer
+        value: https://htxfsiqfmtzgrcxwoxco.supabase.co/auth/v1
+      - key: Jwt__Audience
+        value: authenticated
+    
+    # HTTP configuration
+    http_port: 8080
+    
+    # Health check
+    health_check:
+      http_path: /health # Upewnij się, że backend ma endpoint /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+    
+    # Resource allocation
+    instance_count: 1
+    instance_size_slug: basic-xxs # 512MB RAM, 0.5 vCPU - adjust as needed
+    
+    # Routes - backend is internal only (no public routes)
+    # Accessible via http://backend:8080 from frontend service
+    routes: []
+
+# Alerts configuration (optional)
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
+# Features
+features:
+  - buildpack-stack=ubuntu-22

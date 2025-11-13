@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = !isDevelopment,
-            ValidIssuers = new[] { jwtIssuer, "supabase", "supabase-demo" },
+            ValidIssuers = new[] { jwtIssuer, "supabase", "supabase-demo", "https://htxfsiqfmtzgrcxwoxco.supabase.co/auth/v1" },
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             NameClaimType = "sub"
         };
@@ -67,11 +67,22 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Add authentication and authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Health check endpoint for monitoring and load balancers
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    timestamp = DateTime.UtcNow,
+    version = "1.0.0"
+}))
+.AllowAnonymous()
+.WithName("HealthCheck")
+.WithTags("Health");
 
 // Helper method to extract user ID from JWT token
 static string? GetUserIdFromContext(HttpContext context, ILogger logger)
