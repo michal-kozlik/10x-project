@@ -9,8 +9,8 @@ namespace SudokuApi.Repositories
 
         public SupabaseDiagramRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("SupabaseDb")
-                ?? throw new InvalidOperationException("Connection string 'SupabaseDb' is not configured.");
+            _connectionString = configuration.GetConnectionString("Supabase")
+                ?? throw new InvalidOperationException("Connection string 'Supabase' is not configured.");
         }
 
         public async Task<(IReadOnlyList<DiagramRecord> Items, int Total)> ListAsync(

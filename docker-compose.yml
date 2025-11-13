@@ -20,15 +20,6 @@ services:
       # ASP.NET Core configuration
       - ASPNETCORE_URLS=http://0.0.0.0:8080
       - ASPNETCORE_ENVIRONMENT=Production
-      
-      # PostgreSQL connection string (ONLY thing backend needs)
-      # Backend connects directly to Supabase PostgreSQL database
-      - ConnectionStrings__SupabaseDb=${SUPABASE_CONNECTION_STRING}
-      
-      # JWT Configuration for authentication
-      - Jwt__Secret=${Jwt__Secret}
-      - Jwt__Issuer=${Jwt__Issuer}
-      - Jwt__Audience=${Jwt__Audience}
     networks:
       - sudoku-network
     healthcheck:

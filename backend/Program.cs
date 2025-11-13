@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = !isDevelopment,
-            ValidIssuers = new[] { jwtIssuer, "supabase", "supabase-demo" },
+            ValidIssuers = new[] { jwtIssuer, "supabase", "supabase-demo", "https://htxfsiqfmtzgrcxwoxco.supabase.co/auth/v1" },
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             NameClaimType = "sub"
         };
@@ -67,7 +67,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Add authentication and authorization middleware
 app.UseAuthentication();
